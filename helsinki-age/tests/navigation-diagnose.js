@@ -1,0 +1,5 @@
+import {chromium} from '@playwright/test';
+const browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000}});
+await page.goto('http://localhost:5173/?year=2026');await page.waitForFunction(()=>window.__atlas,null,{timeout:60000});
+const state=()=>page.evaluate(()=>{const {viewer:v}=window.__atlas;const c=v.scene.screenSpaceCameraController;return {position:v.camera.positionWC,cartographic:v.camera.positionCartographic,enabled:c.enableInputs,rotate:c.enableRotate,zoom:c.enableZoom,translate:c.enableTranslate,hit:document.elementFromPoint(800,500)?.outerHTML.slice(0,300)}});
+console.log('before',await state());await page.mouse.move(800,500);await page.mouse.down();await page.mouse.move(1020,540,{steps:30});await page.mouse.up();await page.waitForTimeout(500);console.log('drag',await state());await page.mouse.wheel(0,-700);await page.waitForTimeout(500);console.log('wheel',await state());await page.locator('#zoom-in').click();await page.waitForTimeout(500);console.log('button',await state());await browser.close();

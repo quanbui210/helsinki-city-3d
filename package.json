@@ -1,0 +1,1 @@
+{"name":"city3d-workspace","private":true,"scripts":{"dev":"npm --prefix helsinki-age run dev","build":"npm --prefix helsinki-age run build","test":"npm --prefix helsinki-age test"}}

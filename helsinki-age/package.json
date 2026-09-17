@@ -1,0 +1,34 @@
+{
+  "name": "helsinki-age",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite viewer --host 0.0.0.0",
+    "build": "vite build viewer",
+    "preview": "vite preview viewer --host 0.0.0.0",
+    "data:fetch": "node data-pipeline/fetch-wfs-buildings.js",
+    "data:join": "node data-pipeline/join-manifest.js",
+    "data:convert": "node data-pipeline/convert-citygml-to-3dtiles.js",
+    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build",
+    "test": "node --test data-pipeline/*.test.js",
+    "test:browser": "node tests/smoke.js",
+    "data:map:fetch": "node data-pipeline/fetch-map-context.js",
+    "data:map:build": "node data-pipeline/build-map-context.js"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "cesium": "^1.145.0",
+    "earcut": "^3.2.3",
+    "proj4": "^2.22.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "sharp": "^0.35.4",
+    "vite": "^6.1.0",
+    "vite-plugin-static-copy": "^2.2.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

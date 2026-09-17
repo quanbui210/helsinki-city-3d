@@ -1,0 +1,64 @@
+{
+  "area": "Central & eastern Helsinki",
+  "bbox": [
+    25497000,
+    6672400,
+    25500400,
+    6676900
+  ],
+  "crs": "EPSG:3879",
+  "citySource": "https://3d.hel.ninja/data/citygml/Helsinki3D_CityGML_Kalasatama_20190326.zip",
+  "citySourceDate": "2019-03-26",
+  "registerSource": "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
+  "registerRequests": [
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=0&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=2000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=4000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=6000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=8000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=10000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=12000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=14000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=16000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=18000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=20000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=22000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=24000&sortBy=tietopalvelu_id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3ARakennukset_alue_rekisteritiedot&outputFormat=application%2Fjson&srsName=EPSG%3A3879&bbox=25497000%2C6672400%2C25500400%2C6676900%2CEPSG%3A3879&count=2000&startIndex=26000&sortBy=tietopalvelu_id"
+  ],
+  "retrievedAt": "2026-09-16T11:15:11.417Z",
+  "sourceSha256": "2e375fd3c87384369ff7743cd13c6aba857868905324a557289023dfada8d773",
+  "croppedSha256": "b8a366c50f3ce5fa118dae98a3469ee279aa4978291cd63335bfdbd5aebf3f89",
+  "buildings": 2674,
+  "excludedPlanned": 245,
+  "registerRecords": 27802,
+  "registerRatus": 2368,
+  "joined": 1710,
+  "unknown": 964,
+  "statuses": {
+    "unmatched": 931,
+    "matched": 1710,
+    "missing-year": 33
+  },
+  "joinKey": "CityGML Rakennustunnus_(RATU) = WFS ratu",
+  "yearField": "c_valmpvm",
+  "center": [
+    24.976571802891954,
+    60.18468932824925
+  ],
+  "minYear": 1765,
+  "maxYear": 2022,
+  "tileBytes": 23736048,
+  "tiles": 18,
+  "triangles": 279406,
+  "lods": {
+    "1": 0,
+    "2": 2674
+  },
+  "notes": [
+    "Geometry snapshot: 26 March 2019; partial central/eastern coverage, not all Helsinki.",
+    "Completion dates from the current building register, joined by RATU.",
+    "Unknown-year buildings remain visible; historical demolished buildings are not reconstructed.",
+    "Source N2000 heights retained without a geoid conversion; no surveyed terrain or textures."
+  ]
+}
