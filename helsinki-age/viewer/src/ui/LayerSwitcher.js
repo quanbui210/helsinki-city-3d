@@ -25,7 +25,8 @@ export class LayerSwitcher {
     this.container.querySelector('h2').textContent=active.title;
     const records=[...this.manager.records.values()];
     const known=active.coverage?.(records,state);
-    this.container.querySelector('.lens-count').textContent=known===undefined?'':`${known.toLocaleString()} / ${records.length.toLocaleString()} with data`;
+    this.container.querySelector('.lens-count').textContent=active.coverageLabel?.(records,state)??(known===undefined?'':`${known.toLocaleString()} / ${records.length.toLocaleString()} with data`);
+    this.container.querySelector('.lens-source').href=active.source??'/layers.json';
     this.container.querySelector('.lens-description').textContent=active.description;
     const controls=this.container.querySelector('.lens-controls');controls.replaceChildren();
     active.ui?.(controls,state,patch=>this.onChange(active.id,patch),id=>this.onChange(id));

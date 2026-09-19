@@ -8,42 +8,44 @@
     "road": {
       "layer": "Meluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden",
       "requests": [
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id",
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=1000&sortBy=id",
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=2000&sortBy=id",
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=3000&sortBy=id"
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=1000&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=2000&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=3000&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=4000&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=5000&sortBy=id"
       ],
-      "retrieved": "2026-09-19T16:56:22.661Z",
-      "features": 3184,
-      "sha256": "2d497b8f9be75952837a6b88bcd517bea417a5e8c348ae07c82bf0c8999cd77b"
+      "retrieved": "2026-09-19T17:49:38.490Z",
+      "features": 5333,
+      "sha256": "3c7f2226837151f8b023856921c6b600bf11d56addcbe481b2fa14afe7b68b13"
     },
     "rail": {
       "layer": "Meluselvitys_2022_Helsinki_rautatiet_Lden",
       "requests": [
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_rautatiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id"
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_rautatiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id"
       ],
-      "retrieved": "2026-09-19T16:56:25.046Z",
-      "features": 266,
-      "sha256": "becd29f5e945d255524c014b7113c983fb5ba56b3009b0574a7c9b44b67ae45a"
+      "retrieved": "2026-09-19T17:49:41.523Z",
+      "features": 456,
+      "sha256": "97509d7d7ce245d26cf5b3e43b8ec04861a88358455fee9931b1c31936c21d4a"
     },
     "metro": {
       "layer": "Meluselvitys_2022_Helsinki_metro_Lden",
       "requests": [
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_metro_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id"
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_metro_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id"
       ],
-      "retrieved": "2026-09-19T16:56:25.302Z",
-      "features": 273,
-      "sha256": "56a6127c1d228385332096c5e704b9d503bccc4fc5a96b2c2c11f532422ba5a9"
+      "retrieved": "2026-09-19T17:49:41.995Z",
+      "features": 772,
+      "sha256": "320540ff1d9aac09abd23c9049f9744d5cd0c62d9513566343d78a78d28899c7"
     },
     "tram": {
       "layer": "Meluselvitys_2022_Helsinki_raitiotie_Lden",
       "requests": [
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_raitiotie_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id",
-        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_raitiotie_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=1000&sortBy=id"
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_raitiotie_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_raitiotie_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6669600%2C25505000%2C6678500%2CEPSG%3A3879&count=1000&startIndex=1000&sortBy=id"
       ],
-      "retrieved": "2026-09-19T16:56:25.965Z",
-      "features": 1326,
-      "sha256": "d2332f33e9df9f29943025e62628a04730999ea13e225fed6e6e08cfa0172a05"
+      "retrieved": "2026-09-19T17:49:42.844Z",
+      "features": 1376,
+      "sha256": "aa44215efddb91da6e92e2d90adb84304922a25685586abe8e2a916526156073"
     }
   },
   "bands": [
@@ -97,7 +99,7 @@
   },
   "energy": {
     "status": "available",
-    "retrieved": "2026-09-19T16:56:45.226Z",
+    "retrieved": "2026-09-19T17:50:25.792Z",
     "configUrl": "https://kartta.hel.fi/3d/atlas/config.json",
     "tilesetUrl": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/tileset.json",
     "field": "attributes.energiatod_luokka",

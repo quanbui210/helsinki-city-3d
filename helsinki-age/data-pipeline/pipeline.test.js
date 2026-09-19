@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {normalizeRatu,parseYear,buildRegisterIndex,joinBuilding,extractRatu} from './lib.js';
+import {normalizeRatu,parseYear,buildRegisterIndex,joinBuilding,extractRatu,geometryBounds,insideBbox} from './lib.js';
 import {triangulate,buildingTriangles} from './geometry.js';
 import {parseBuilding} from './lib.js';
 import {visibleAt,initialYear} from '../viewer/src/YearSlider.js';
@@ -17,6 +17,17 @@ test('ID join handles conflicts and never guesses an unmatched year',()=>{const 
 test('Triangulation preserves a courtyard hole',()=>{const ts=triangulate([[[0,0,0],[10,0,0],[10,10,0],[0,10,0]],[[3,3,0],[7,3,0],[7,7,0],[3,7,0]]]);const area=ts.reduce((s,[a,b,c])=>s+Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))/2,0);assert.equal(area,84)});
 test('WFS lod2Solid xlinks resolve and installations are ignored',()=>{
  const xml=`<bldg:Building gml:id="BID_x"><bldg:lod1Solid><gml:Polygon gml:id="wall"><gml:LinearRing><gml:posList>0 0 0 10 0 0 10 0 8 0 0 8 0 0 0</gml:posList></gml:LinearRing></gml:Polygon></bldg:lod1Solid><bldg:lod2Solid><gml:surfaceMember xlink:href="#wall"/></bldg:lod2Solid><bldg:outerBuildingInstallation><bldg:BuildingInstallation><bldg:lod2MultiSurface><gml:Polygon gml:id="balcony"><gml:LinearRing><gml:posList>0 0 8 2 0 8 2 0 9 0 0 9 0 0 8</gml:posList></gml:LinearRing></gml:Polygon></bldg:lod2MultiSurface></bldg:BuildingInstallation></bldg:outerBuildingInstallation></bldg:Building>`;
+ const {triangles,lod}=buildingTriangles(parseBuilding(xml));
+ assert.equal(lod,2);assert.equal(triangles.length,2);
+});
+test('Espoo buildings without gml:Envelope get bounds from posList',()=>{
+ const xml=`<bldg:Building gml:id="Building_1"><bldg:boundedBy><bldg:GroundSurface><gml:Polygon><gml:LinearRing><gml:posList>25483100 6672000 3 25483200 6672000 3 25483200 6672100 8 25483100 6672100 8 25483100 6672000 3</gml:posList></gml:LinearRing></gml:Polygon></bldg:GroundSurface></bldg:boundedBy></bldg:Building>`;
+ const bounds=geometryBounds(xml);
+ assert.deepEqual(bounds.center.slice(0,2),[25483150,6672050]);
+ assert.equal(insideBbox(bounds.center,[25483000,6671600,25490000,6675200]),true);
+});
+test('Espoo lod2Solid xlinks without a hash prefix resolve',()=>{
+ const xml=`<bldg:Building gml:id="Building_1"><bldg:lod2Solid><gml:surfaceMember xlink:href="wall"/></bldg:lod2Solid><gml:Polygon gml:id="wall"><gml:LinearRing><gml:posList>0 0 0 10 0 0 10 0 8 0 0 8 0 0 0</gml:posList></gml:LinearRing></gml:Polygon></bldg:Building>`;
  const {triangles,lod}=buildingTriangles(parseBuilding(xml));
  assert.equal(lod,2);assert.equal(triangles.length,2);
 });

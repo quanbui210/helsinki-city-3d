@@ -1,8 +1,8 @@
 import {readFile, writeFile, stat} from 'node:fs/promises';
 import proj4 from 'proj4';
 import {Cartesian3, Matrix4, Transforms} from 'cesium';
-import {INCREMENTS, LEGACY_BBOX, PROJECTION, PUBLIC, RAW, ROOT} from './config.js';
-import {parseBuilding, uniqueBuildingBlocks} from './lib.js';
+import {INCREMENTS, LEGACY_BBOX, PROJECTION, PUBLIC, RAW, ROOT, unionBox} from './config.js';
+import {geometryBounds, parseBuilding, uniqueBuildingBlocks} from './lib.js';
 import {buildingTriangles, encodeB3dm} from './geometry.js';
 
 const existing = JSON.parse(await readFile(`${PUBLIC}buildings-manifest.json`, 'utf8'));
@@ -20,12 +20,12 @@ const groups = new Map();
 for (const block of uniqueBuildingBlocks(xml)) {
   const id = block.match(/gml:id="([^"]+)"/)[1];
   if (known.has(id) || !byId.has(id)) continue;
-  const lo = block.match(/<gml:lowerCorner>(.*?)<\/gml:lowerCorner>/)[1].trim().split(/\s+/).map(Number);
-  const hi = block.match(/<gml:upperCorner>(.*?)<\/gml:upperCorner>/)[1].trim().split(/\s+/).map(Number);
-  const point = lo.map((v, i) => (v + hi[i]) / 2);
+  const bounds = geometryBounds(block);
+  if (!bounds) { console.warn(`No bounds ${id}`); continue; }
+  const point = bounds.center;
   const key = `c-${Math.floor((point[0] - LEGACY_BBOX[0]) / 1000)}-${Math.floor((point[1] - LEGACY_BBOX[1]) / 1000)}`;
   if (!groups.has(key)) groups.set(key, []);
-  groups.get(key).push({block, point, top: hi[2]});
+  groups.get(key).push({block, point, top: bounds.hi[2] ?? 0});
 }
 
 const tileset = JSON.parse(await readFile(`${PUBLIC}tileset/tileset.json`, 'utf8'));
@@ -55,7 +55,7 @@ for (const [key, entries] of [...groups].sort(([a], [b]) => a.localeCompare(b)))
   for (const {block, point, top} of entries) {
     const id = block.match(/gml:id="([^"]+)"/)[1], record = byId.get(id);
     const {triangles, lod} = buildingTriangles(parseBuilding(block));
-    if (!triangles.length) throw Error(`No geometry ${id}`);
+    if (!triangles.length) { console.warn(`No geometry ${id}`); continue; }
     const featureId = tileRecords.length;
     for (const triangle of triangles) {
       const p = triangle.map(local);
@@ -67,6 +67,7 @@ for (const [key, entries] of [...groups].sort(([a], [b]) => a.localeCompare(b)))
     }
     tileRecords.push({...record, tileFeatureId: featureId, tileContentUri, lod, position: [...projection.forward(point.slice(0, 2)), top]});
   }
+  if (!tileRecords.length) continue;
   records.push(...tileRecords);
   newTriangles += positions.length / 9;
   await writeFile(`${PUBLIC}tileset/${tileContentUri}`, encodeB3dm(positions, normals, batchIds, tileRecords));
@@ -75,6 +76,7 @@ for (const [key, entries] of [...groups].sort(([a], [b]) => a.localeCompare(b)))
   console.log(`Tile ${key}: ${tileRecords.length} buildings`);
 }
 
+if (!records.length) throw Error('No new expansion buildings with geometry');
 tileset.root.boundingVolume.box = box(allMin, allMax);
 await writeFile(`${PUBLIC}tileset/tileset.json`, JSON.stringify(tileset));
 const merged = [...existing.filter(r => !records.some(n => n.buildingId === r.buildingId)), ...records];
@@ -86,10 +88,14 @@ const expansion = JSON.parse(await readFile(`${RAW}expansion-provenance.json`, '
 const join = JSON.parse(await readFile(`${RAW}increment-join-report.json`, 'utf8'));
 const years = merged.map(b => b.constructionYear).filter(y => y !== null);
 const previous = Array.isArray(summary.expansions) ? summary.expansions : summary.expansion ? [summary.expansion] : [];
+const publishedBoxes = [summary.bbox, ...INCREMENTS.map(i => i.bbox), ...(expansion.increments || []).map(i => i.bbox).filter(Boolean)];
+const espoo = (expansion.citySource || '').includes('espoo');
 await writeFile(`${PUBLIC}dataset.json`, JSON.stringify({
   ...summary,
-  bbox: [Math.min(summary.bbox[0], ...INCREMENTS.map(i => i.bbox[0])), Math.min(summary.bbox[1], ...INCREMENTS.map(i => i.bbox[1])), Math.max(summary.bbox[2], ...INCREMENTS.map(i => i.bbox[2])), Math.max(summary.bbox[3], ...INCREMENTS.map(i => i.bbox[3]))],
-  area: 'Helsinki 3D increments: 2019 central/eastern crop plus official citydb west, south and inner-city strips',
+  bbox: unionBox(publishedBoxes),
+  area: espoo
+    ? 'Helsinki official CityGML increments plus City of Espoo LOD2 WFS (Otaniemi / Keilaniemi / Westend)'
+    : 'Helsinki 3D increments: 2019 central/eastern crop plus official citydb west, south and inner-city strips',
   buildings: merged.length,
   joined: merged.filter(b => b.joinStatus === 'matched').length,
   unknown: merged.filter(b => b.constructionYear === null).length,
@@ -104,9 +110,10 @@ await writeFile(`${PUBLIC}dataset.json`, JSON.stringify({
   expansionJoin: join,
   notes: [
     '2019 Kalasatama CityGML crop retained for the original central/eastern tiles.',
-    'Later increments are the official citydb WFS. Already-published GML IDs are never duplicated. No inferred years or nearest-building guesses.',
-    'Completion dates from the current building register, joined by RATU.',
+    'Helsinki increments are the official citydb WFS. Espoo increments are the official City of Espoo CityGML LOD2 WFS. Already-published GML IDs are never duplicated. No inferred years or nearest-building guesses.',
+    'Helsinki completion dates from the building register, joined by RATU. Espoo years from CityGML yearOfConstruction / valmistumispvm.',
     'Unknown-year buildings remain visible; historical demolished buildings are not reconstructed.',
+    'Vantaa LOD2 CityGML is not openly available; public Vantaa building layers are 2D and are not extruded.',
     'Source N2000 heights retained without a geoid conversion; no surveyed terrain or textures.',
   ],
 }, null, 2));

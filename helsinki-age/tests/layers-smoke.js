@@ -32,7 +32,7 @@ try{
   }
   await page.locator('button[data-layer="noise"]').click();
   for(const mode of ['road','rail','metro','tram','combined']){
-    await page.locator('#noise-mode').selectOption(mode);
+    await page.locator(`[data-noise-mode="${mode}"]`).click();
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     const result=await page.evaluate(()=>{
       const a=__atlas;let bad=0,known=0,unknown=0;

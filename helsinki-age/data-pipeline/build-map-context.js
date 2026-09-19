@@ -46,5 +46,5 @@ for(const d of districts){const entries=manifest.filter(b=>contains(b.position,d
  const position=[0,1].map(i=>entries.reduce((sum,b)=>sum+b.position[i],0)/entries.length);
  neighborhoods.push({id:d.properties.tunnus,name,position,count:entries.length,known:entries.filter(b=>b.constructionYear!==null).length,bounds:d.geometry});
 }
-await writeFile(`${PUBLIC}map/context.json`,JSON.stringify({rectangle,labels,neighborhoods,source:JSON.parse(await readFile(`${RAW}context/source.json`,'utf8')),note:'Present-day reference geography. Partial 3D coverage: 2019 crop plus official citydb increments.'}));
+await writeFile(`${PUBLIC}map/context.json`,JSON.stringify({rectangle,labels,neighborhoods,source:JSON.parse(await readFile(`${RAW}context/source.json`,'utf8')),note:'Present-day Helsinki reference geography. Partial 3D coverage: 2019 crop plus official Helsinki citydb and Espoo LOD2 increments. Neighborhoods are Helsinki districts only.'}));
 console.log(`Created basemaps, ${labels.length} official labels, ${neighborhoods.length} neighborhoods.`,neighborhoods.map(n=>`${n.name}: ${n.count}`));

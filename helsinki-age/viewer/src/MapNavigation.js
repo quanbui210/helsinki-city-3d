@@ -4,7 +4,7 @@ const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 export class MapNavigation {
  constructor(viewer,onChange){
   this.viewer=viewer;this.canvas=viewer.scene.canvas;this.onChange=onChange;
-  this.state={lon:24.928,lat:60.172,heading:-18,pitch:-48,range:3900};this.home={...this.state};this.pointers=new Map();this.dragged=false;this.orbit=false;
+  this.state={lon:24.90,lat:60.175,heading:-18,pitch:-48,range:4800};this.home={...this.state};this.pointers=new Map();this.dragged=false;this.orbit=false;
   viewer.scene.screenSpaceCameraController.enableInputs=false;
   this.canvas.tabIndex=0;this.canvas.setAttribute('aria-label','Helsinki map. Drag to pan, scroll to zoom, Shift-drag to rotate. Arrow keys pan; plus and minus zoom.');
   this.canvas.addEventListener('contextmenu',e=>e.preventDefault());

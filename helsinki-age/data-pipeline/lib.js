@@ -38,6 +38,25 @@ export function envelopeCenter(block) {
   if (!lo || !hi || lo.length < 2 || hi.length < 2 || [...lo, ...hi].some(n => !Number.isFinite(n))) return null;
   return lo.map((v, i) => (v + hi[i]) / 2);
 }
+export function geometryBounds(block) {
+  const loEnv = block.match(/<gml:lowerCorner>(.*?)<\/gml:lowerCorner>/)?.[1]?.trim().split(/\s+/).map(Number);
+  const hiEnv = block.match(/<gml:upperCorner>(.*?)<\/gml:upperCorner>/)?.[1]?.trim().split(/\s+/).map(Number);
+  if (loEnv && hiEnv && loEnv.length >= 2 && hiEnv.length >= 2 && [...loEnv, ...hiEnv].every(Number.isFinite)) {
+    return {lo: loEnv, hi: hiEnv, center: loEnv.map((v, i) => (v + hiEnv[i]) / 2)};
+  }
+  const xs = [], ys = [], zs = [];
+  for (const match of block.matchAll(/<gml:pos(?:List)?[^>]*>([\s\S]*?)<\/gml:pos(?:List)?>/g)) {
+    const numbers = match[1].trim().split(/\s+/).map(Number);
+    if (numbers.length % 3 || numbers.some(n => !Number.isFinite(n))) continue;
+    for (let i = 0; i < numbers.length; i += 3) {
+      xs.push(numbers[i]); ys.push(numbers[i + 1]); zs.push(numbers[i + 2]);
+    }
+  }
+  if (!xs.length) return null;
+  const lo = [Math.min(...xs), Math.min(...ys), Math.min(...zs)];
+  const hi = [Math.max(...xs), Math.max(...ys), Math.max(...zs)];
+  return {lo, hi, center: lo.map((v, i) => (v + hi[i]) / 2)};
+}
 export function insideBbox([x, y], [minX, minY, maxX, maxY]) {
   return x >= minX && x <= maxX && y >= minY && y <= maxY;
 }

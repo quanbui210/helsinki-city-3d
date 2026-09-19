@@ -4,3 +4,6 @@ data-pipeline/raw/
 docs/
 *.log
 .DS_Store
+.env
+.env.*
+!.env.example

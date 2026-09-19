@@ -62,7 +62,7 @@ export function setupAppearance(viewer,tileset,center){
       }`,uniforms:{groundOrigin:origin,groundUp:up}}));
   edges.enabled=false;
   return {edges,refresh(contents,active){
-    edges.enabled=active!=='overview';
+    edges.enabled=!['overview','price','parking'].includes(active);
     tileset.colorBlendAmount=['noise','energy','use'].includes(active)?0.74:0.4;
   }};
 }

@@ -27,7 +27,7 @@ function ancestorName(node, names) {
 }
 function hrefId(node) {
   const href = node.getAttributeNS?.('http://www.w3.org/1999/xlink', 'href') || node.getAttribute('xlink:href') || node.getAttribute('href');
-  return href?.startsWith('#') ? href.slice(1) : null;
+  return href ? href.replace(/^#/, '') : null;
 }
 export function buildingTriangles(building) {
   const installation = new Set(['BuildingInstallation', 'outerBuildingInstallation', 'interiorBuildingInstallation']);

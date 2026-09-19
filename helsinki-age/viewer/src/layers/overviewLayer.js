@@ -3,11 +3,13 @@ const lenses=[
   {id:'noise',name:'Noise',blurb:'2022 modeled street noise'},
   {id:'energy',name:'Energy',blurb:'Archived 2013 certificate'},
   {id:'use',name:'Use',blurb:'Register purpose'},
+  {id:'parking',name:'Parking',blurb:'Public street parking nearby'},
+  {id:'price',name:'Price',blurb:'Postal-area sale & rent'},
 ];
 
 export default {
   id:'overview',label:'Overview',title:'The city, as modeled',
-  description:'No data tint. Missing records stay blank — they are never guessed.',
+  description:'',
   legend:()=>[],
   buildStyle:()=>undefined,
   ui(container,_state,_update,openLayer){

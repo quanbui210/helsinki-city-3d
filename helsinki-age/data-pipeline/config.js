@@ -9,6 +9,10 @@ export const INCREMENTS = [
   {id: 'ruoholahti', area: 'Ruoholahti, Jätkäsaari', bbox: [25492800, 6671600, 25495500, 6673800]},
   {id: 'northwest', area: 'Meilahti, Taka-Töölö, Pasila', bbox: [25494000, 6674200, 25497000, 6677200]},
   {id: 'lauttasaari', area: 'Lauttasaari', bbox: [25490000, 6672000, 25492800, 6674200]},
+  {id: 'north', area: 'Käpylä, Koskela, Kumpula north', bbox: [25494000, 6677200, 25501000, 6678500]},
+  {id: 'east_south', area: 'Kulosaari south, Herttoniemi shore', bbox: [25501000, 6670800, 25505000, 6672400]},
+  {id: 'east_mid', area: 'Kulosaari, Herttoniemi', bbox: [25501000, 6672400, 25504000, 6674600]},
+  {id: 'suomenlinna', area: 'Suomenlinna', bbox: [25500000, 6669600, 25504000, 6670800]},
 ];
 export function unionBox(boxes) {
   return [
@@ -18,8 +22,12 @@ export function unionBox(boxes) {
     Math.max(...boxes.map(b => b[3])),
   ];
 }
+export const ESPOO_INCREMENTS = [
+  {id: 'espoo_east', area: 'Otaniemi, Keilaniemi, Westend', bbox: [25483000, 6671600, 25490000, 6675200]},
+];
+export const ESPOO_URL = 'https://kartat.espoo.fi/teklaogcweb/wfs.ashx';
 export const BBOX = unionBox([LEGACY_BBOX, ...INCREMENTS.map(i => i.bbox)]);
-export const MAP_BBOX = [25489000, 6670400, 25504000, 6678600];
+export const MAP_BBOX = [25480000, 6668800, 25507000, 6679800];
 export const REGISTER_URL = 'https://kartta.hel.fi/ws/geoserver/avoindata/wfs';
 export const CITY_URL = 'https://kartta.hel.fi/3d/citydb-wfs/wfs';
 export const ARCHIVE_URL = 'https://3d.hel.ninja/data/citygml/Helsinki3D_CityGML_Kalasatama_20190326.zip';
