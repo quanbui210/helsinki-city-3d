@@ -4,7 +4,7 @@ const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 export class MapNavigation {
  constructor(viewer,onChange){
   this.viewer=viewer;this.canvas=viewer.scene.canvas;this.onChange=onChange;
-  this.state={lon:24.955,lat:60.173,heading:-24,pitch:-48,range:2550};this.home={...this.state};this.pointers=new Map();this.dragged=false;this.orbit=false;
+  this.state={lon:24.928,lat:60.172,heading:-18,pitch:-48,range:3900};this.home={...this.state};this.pointers=new Map();this.dragged=false;this.orbit=false;
   viewer.scene.screenSpaceCameraController.enableInputs=false;
   this.canvas.tabIndex=0;this.canvas.setAttribute('aria-label','Helsinki map. Drag to pan, scroll to zoom, Shift-drag to rotate. Arrow keys pan; plus and minus zoom.');
   this.canvas.addEventListener('contextmenu',e=>e.preventDefault());
@@ -22,16 +22,16 @@ export class MapNavigation {
   this.canvas.addEventListener('pointerup',end);this.canvas.addEventListener('pointercancel',end);this.canvas.addEventListener('lostpointercapture',end);
   this.canvas.addEventListener('wheel',e=>{e.preventDefault();this.cancelFlight();this.orbit=false;const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?this.canvas.clientHeight:1);this.zoom(Math.exp(clamp(delta*.0012,-.3,.3)));},{passive:false});
   this.canvas.addEventListener('keydown',e=>{const keys={ArrowLeft:[70,0],ArrowRight:[-70,0],ArrowUp:[0,70],ArrowDown:[0,-70]};if(keys[e.key]){e.preventDefault();this.cancelFlight();this.pan(...keys[e.key]);}else if(['+','=','-','Home'].includes(e.key)){e.preventDefault();e.key==='Home'?this.reset():this.zoom(e.key==='-'?1.25:.8);}});
-  let previous=performance.now();viewer.scene.preRender.addEventListener(()=>{const t=performance.now(),dt=Math.min((t-previous)/1000,.1);previous=t;if(this.orbit&&!this.flight){this.state.heading+=dt*1.8;this.apply();}});
+  let previous=performance.now();viewer.scene.preRender.addEventListener(()=>{const t=performance.now(),dt=Math.min((t-previous)/1000,.1);previous=t;if(this.orbit&&!this.flight){this.state.heading+=dt*.65;this.apply();}});
   this.apply();
  }
  metersPerPixel(){return 2*this.state.range*Math.tan(this.viewer.camera.frustum.fovy/2)/this.canvas.clientHeight;}
- pan(dx,dy){const h=this.state.heading*Math.PI/180,m=this.metersPerPixel(),y=dy/Math.sin(-this.state.pitch*Math.PI/180),east=(-dx*Math.cos(h)+y*Math.sin(h))*m,north=(dx*Math.sin(h)+y*Math.cos(h))*m;this.state.lon=clamp(this.state.lon+east/(111320*Math.cos(this.state.lat*Math.PI/180)),24.89,25.075);this.state.lat=clamp(this.state.lat+north/111320,60.155,60.223);this.apply();}
- zoom(factor){this.cancelFlight();this.state.range=clamp(this.state.range*factor,180,12000);this.apply();}
+ pan(dx,dy){this.orbit=false;const h=this.state.heading*Math.PI/180,m=this.metersPerPixel(),y=dy/Math.sin(-this.state.pitch*Math.PI/180),east=(-dx*Math.cos(h)+y*Math.sin(h))*m,north=(dx*Math.sin(h)+y*Math.cos(h))*m;this.state.lon=clamp(this.state.lon+east/(111320*Math.cos(this.state.lat*Math.PI/180)),24.7,25.4);this.state.lat=clamp(this.state.lat+north/111320,60.05,60.45);this.apply();}
+ zoom(factor){this.orbit=false;this.cancelFlight();this.state.range=clamp(this.state.range*factor,180,12000);this.apply();}
  apply(){const s=this.state;this.viewer.camera.lookAt(Cartesian3.fromDegrees(s.lon,s.lat,0),new HeadingPitchRange(CesiumMath.toRadians(s.heading),CesiumMath.toRadians(s.pitch),s.range));this.viewer.camera.lookAtTransform(Matrix4.IDENTITY);this.onChange?.(s);}
  cancelFlight(){cancelAnimationFrame(this.flight);this.flight=null;}
  flyTo(position,range=1800){this.orbit=false;this.cancelFlight();const start={...this.state},end={...start,lon:position[0],lat:position[1],range},begin=performance.now();const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:950;const tick=t=>{const p=duration?Math.min((t-begin)/duration,1):1,e=p*p*(3-2*p);for(const k of ['lon','lat','range'])this.state[k]=start[k]+(end[k]-start[k])*e;this.apply();if(p<1)this.flight=requestAnimationFrame(tick);else this.flight=null;};this.flight=requestAnimationFrame(tick);}
  reset(){this.state.heading=this.home.heading;this.state.pitch=this.home.pitch;this.flyTo([this.home.lon,this.home.lat],this.home.range);}
- rotate(degrees){this.cancelFlight();this.state.heading+=degrees;this.apply();}
- togglePerspective(){this.state.pitch=this.state.pitch<-75?-48:-88;this.apply();}
+ rotate(degrees){this.orbit=false;this.cancelFlight();this.state.heading+=degrees;this.apply();}
+ togglePerspective(){this.orbit=false;this.state.pitch=this.state.pitch<-75?-48:-88;this.apply();}
 }

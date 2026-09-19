@@ -8,4 +8,4 @@ npm ci
 npm run dev
 ```
 
-Prepared real CityGML tiles are included: 2,674 buildings across parts of 14 Helsinki neighborhoods, with 1,710 matched construction years and a detailed labeled basemap. See the app’s About panel and project README for the 2019 geometry snapshot and other data limitations.
+Prepared real CityGML tiles are included: 8,456 buildings across parts of 30 Helsinki neighborhoods, with 5,625 matched construction years and a detailed labeled basemap. See the app’s About panel and project README for the mixed 2019 / current citydb geometry and other data limitations.

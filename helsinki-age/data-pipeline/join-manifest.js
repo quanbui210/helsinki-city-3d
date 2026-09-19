@@ -1,13 +1,13 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { RAW, ROOT } from './config.js';
-import { uniqueBuildingBlocks, normalizeRatu, buildRegisterIndex, joinBuilding } from './lib.js';
+import { uniqueBuildingBlocks, extractRatu, buildRegisterIndex, joinBuilding } from './lib.js';
 const xml = await readFile(`${RAW}central.gml`,'utf8');
 const register = JSON.parse(await readFile(`${RAW}buildings.geojson`,'utf8'));
 const index = buildRegisterIndex(register.features);
 const manifest = [];
 for (const block of uniqueBuildingBlocks(xml)) {
   const id = block.match(/gml:id="([^"]+)"/)[1];
-  const ratu = normalizeRatu(block.match(/name="Rakennustunnus_\(RATU\)"[^>]*>\s*<gen:value>([^<]*)/)?.[1]);
+  const ratu = extractRatu(block);
   manifest.push({...joinBuilding(id,ratu,index),tileFeatureId:manifest.length});
 }
 if (new Set(manifest.map(b=>b.buildingId)).size!==manifest.length) throw new Error('Duplicate GML IDs');

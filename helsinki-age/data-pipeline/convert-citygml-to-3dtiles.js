@@ -1,20 +1,20 @@
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import proj4 from 'proj4';
 import {Cartesian3,Matrix4,Transforms} from 'cesium';
-import {RAW,PUBLIC,ROOT,BBOX,PROJECTION} from './config.js';
+import {RAW,PUBLIC,ROOT,LEGACY_BBOX,PROJECTION} from './config.js';
 import {uniqueBuildingBlocks,parseBuilding} from './lib.js';
 import {buildingTriangles,encodeB3dm} from './geometry.js';
 const manifest=JSON.parse(await readFile(`${ROOT}data-pipeline/buildings-manifest.json`,'utf8'));
 const byId=new Map(manifest.map(r=>[r.buildingId,r]));
 const projection=proj4(PROJECTION,'EPSG:4326');
-const center=projection.forward([(BBOX[0]+BBOX[2])/2,(BBOX[1]+BBOX[3])/2]);
+const center=projection.forward([(LEGACY_BBOX[0]+LEGACY_BBOX[2])/2,(LEGACY_BBOX[1]+LEGACY_BBOX[3])/2]);
 const origin=Cartesian3.fromDegrees(...center,0), transform=Transforms.eastNorthUpToFixedFrame(origin), inverse=Matrix4.inverseTransformation(transform,new Matrix4());
 const xml=await readFile(`${RAW}central.gml`,'utf8');
 for(const match of xml.matchAll(/srsName="([^"]+)"/g)) if(!match[1].includes('3879')) throw Error('Unsupported source CRS: '+match[1]);
 const groups=new Map();
 for(const block of uniqueBuildingBlocks(xml)){
  const lo=block.match(/<gml:lowerCorner>(.*?)<\/gml:lowerCorner>/)[1].trim().split(/\s+/).map(Number),hi=block.match(/<gml:upperCorner>(.*?)<\/gml:upperCorner>/)[1].trim().split(/\s+/).map(Number);
- const point=lo.map((v,i)=>(v+hi[i])/2),key=`${Math.floor((point[0]-BBOX[0])/1000)}-${Math.floor((point[1]-BBOX[1])/1000)}`;
+ const point=lo.map((v,i)=>(v+hi[i])/2),key=`${Math.floor((point[0]-LEGACY_BBOX[0])/1000)}-${Math.floor((point[1]-LEGACY_BBOX[1])/1000)}`;
  if(!groups.has(key))groups.set(key,[]);groups.get(key).push({block,point,top:hi[2]});
 }
 await mkdir(`${PUBLIC}tileset`,{recursive:true});

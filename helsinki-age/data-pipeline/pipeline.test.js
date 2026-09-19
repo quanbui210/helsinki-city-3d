@@ -1,14 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {normalizeRatu,parseYear,buildRegisterIndex,joinBuilding} from './lib.js';
-import {triangulate} from './geometry.js';
+import {normalizeRatu,parseYear,buildRegisterIndex,joinBuilding,extractRatu} from './lib.js';
+import {triangulate,buildingTriangles} from './geometry.js';
+import {parseBuilding} from './lib.js';
 import {visibleAt,initialYear} from '../viewer/src/YearSlider.js';
 import {PUBLIC} from './config.js';
 test('RATU normalization never equates missing identifiers',()=>{assert.equal(normalizeRatu(null),null);assert.equal(normalizeRatu(''),null);assert.equal(normalizeRatu(0),null);assert.equal(normalizeRatu('0046011.0'),'46011');assert.equal(normalizeRatu('BID_123'),null)});
+test('RATU extraction accepts archive and citydb attribute names',()=>{
+ assert.equal(extractRatu('<gen:stringAttribute name="Rakennustunnus_(RATU)"><gen:value>939</gen:value></gen:stringAttribute>'),'939');
+ assert.equal(extractRatu('<gen:intAttribute name="RATU"><gen:value>939</gen:value></gen:intAttribute>'),'939');
+ assert.equal(extractRatu('<gen:intAttribute name="ID"><gen:value>744122</gen:value></gen:intAttribute>'),null);
+});
 test('Completion years reject placeholders and future values',()=>{assert.equal(parseYear('1936-12-31T00:00:00+02:00'),1936);for(const value of [null,'','0000-01-01','unknown','1880?','3025-01-01'])assert.equal(parseYear(value),null)});
 test('ID join handles conflicts and never guesses an unmatched year',()=>{const index=buildRegisterIndex([{properties:{ratu:12,c_valmpvm:'1900-01-01'}},{properties:{ratu:'12',c_valmpvm:'1920-01-01'}},{properties:{ratu:14,c_valmpvm:'1880-01-01'}}]);assert.equal(joinBuilding('a',12,index).joinStatus,'conflicting-years');assert.equal(joinBuilding('a',12,index).constructionYear,null);assert.equal(joinBuilding('b',14,index).constructionYear,1880);assert.equal(joinBuilding('c',null,index).joinStatus,'unmatched')});
 test('Triangulation preserves a courtyard hole',()=>{const ts=triangulate([[[0,0,0],[10,0,0],[10,10,0],[0,10,0]],[[3,3,0],[7,3,0],[7,7,0],[3,7,0]]]);const area=ts.reduce((s,[a,b,c])=>s+Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))/2,0);assert.equal(area,84)});
+test('WFS lod2Solid xlinks resolve and installations are ignored',()=>{
+ const xml=`<bldg:Building gml:id="BID_x"><bldg:lod1Solid><gml:Polygon gml:id="wall"><gml:LinearRing><gml:posList>0 0 0 10 0 0 10 0 8 0 0 8 0 0 0</gml:posList></gml:LinearRing></gml:Polygon></bldg:lod1Solid><bldg:lod2Solid><gml:surfaceMember xlink:href="#wall"/></bldg:lod2Solid><bldg:outerBuildingInstallation><bldg:BuildingInstallation><bldg:lod2MultiSurface><gml:Polygon gml:id="balcony"><gml:LinearRing><gml:posList>0 0 8 2 0 8 2 0 9 0 0 9 0 0 8</gml:posList></gml:LinearRing></gml:Polygon></bldg:lod2MultiSurface></bldg:BuildingInstallation></bldg:outerBuildingInstallation></bldg:Building>`;
+ const {triangles,lod}=buildingTriangles(parseBuilding(xml));
+ assert.equal(lod,2);assert.equal(triangles.length,2);
+});
 test('Timeline boundary and deep links are consistent',()=>{assert.equal(visibleAt({constructionYear:1900},1899),false);assert.equal(visibleAt({constructionYear:1900},1900),true);assert.equal(visibleAt({constructionYear:null},1765),true);assert.equal(initialYear('?year=1000',1765,2026),1765);assert.equal(initialYear('?year=9999',1765,2026),2026);assert.equal(initialYear('?year=abc',1765,2026),1765)});
 test('Generated spatial tiles match every manifest row',()=>{
  const m=JSON.parse(fs.readFileSync(`${PUBLIC}buildings-manifest.json`)),tiles=JSON.parse(fs.readFileSync(`${PUBLIC}tileset/tileset.json`));let total=0;

@@ -29,6 +29,18 @@ export function buildRegisterIndex(features) {
   }
   return index;
 }
+export function extractRatu(block) {
+  return normalizeRatu(block.match(/name="(?:Rakennustunnus_\(RATU\)|RATU)"[^>]*>\s*<gen:value>([^<]*)/)?.[1]);
+}
+export function envelopeCenter(block) {
+  const lo = block.match(/<gml:lowerCorner>(.*?)<\/gml:lowerCorner>/)?.[1]?.trim().split(/\s+/).map(Number);
+  const hi = block.match(/<gml:upperCorner>(.*?)<\/gml:upperCorner>/)?.[1]?.trim().split(/\s+/).map(Number);
+  if (!lo || !hi || lo.length < 2 || hi.length < 2 || [...lo, ...hi].some(n => !Number.isFinite(n))) return null;
+  return lo.map((v, i) => (v + hi[i]) / 2);
+}
+export function insideBbox([x, y], [minX, minY, maxX, maxY]) {
+  return x >= minX && x <= maxX && y >= minY && y <= maxY;
+}
 export function joinBuilding(buildingId, ratu, index) {
   const matches = index.get(normalizeRatu(ratu)) || [];
   const years = new Set(matches.map(p=>parseYear(p.c_valmpvm)).filter(y=>y!==null));

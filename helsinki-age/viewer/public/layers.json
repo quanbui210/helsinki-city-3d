@@ -1,0 +1,291 @@
+{
+  "studyYear": 2022,
+  "metric": "Lden",
+  "license": "City of Helsinki, CC BY 4.0",
+  "join": "Point-in-polygon at CityGML envelope center (not facade exposure or a footprint intersection). Highest band wins overlaps. No nearest-zone fallback.",
+  "combined": "Highest available mode band; not total acoustic exposure. Missing modes remain unknown.",
+  "sources": {
+    "road": {
+      "layer": "Meluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden",
+      "requests": [
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=1000&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=2000&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_kadut_ja_maantiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=3000&sortBy=id"
+      ],
+      "retrieved": "2026-09-19T16:56:22.661Z",
+      "features": 3184,
+      "sha256": "2d497b8f9be75952837a6b88bcd517bea417a5e8c348ae07c82bf0c8999cd77b"
+    },
+    "rail": {
+      "layer": "Meluselvitys_2022_Helsinki_rautatiet_Lden",
+      "requests": [
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_rautatiet_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id"
+      ],
+      "retrieved": "2026-09-19T16:56:25.046Z",
+      "features": 266,
+      "sha256": "becd29f5e945d255524c014b7113c983fb5ba56b3009b0574a7c9b44b67ae45a"
+    },
+    "metro": {
+      "layer": "Meluselvitys_2022_Helsinki_metro_Lden",
+      "requests": [
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_metro_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id"
+      ],
+      "retrieved": "2026-09-19T16:56:25.302Z",
+      "features": 273,
+      "sha256": "56a6127c1d228385332096c5e704b9d503bccc4fc5a96b2c2c11f532422ba5a9"
+    },
+    "tram": {
+      "layer": "Meluselvitys_2022_Helsinki_raitiotie_Lden",
+      "requests": [
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_raitiotie_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=0&sortBy=id",
+        "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AMeluselvitys_2022_Helsinki_raitiotie_Lden&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox=25490000%2C6670800%2C25501000%2C6677200%2CEPSG%3A3879&count=1000&startIndex=1000&sortBy=id"
+      ],
+      "retrieved": "2026-09-19T16:56:25.965Z",
+      "features": 1326,
+      "sha256": "d2332f33e9df9f29943025e62628a04730999ea13e225fed6e6e08cfa0172a05"
+    }
+  },
+  "bands": [
+    {
+      "low": 45,
+      "high": 50,
+      "color": "#9BFF00"
+    },
+    {
+      "low": 50,
+      "high": 55,
+      "color": "#009B00"
+    },
+    {
+      "low": 55,
+      "high": 60,
+      "color": "#FFFF00"
+    },
+    {
+      "low": 60,
+      "high": 65,
+      "color": "#FFD763"
+    },
+    {
+      "low": 65,
+      "high": 70,
+      "color": "#FF9B00"
+    },
+    {
+      "low": 70,
+      "high": 75,
+      "color": "#FF0000"
+    },
+    {
+      "low": 75,
+      "high": null,
+      "color": "#9B00FF"
+    }
+  ],
+  "counts": {
+    "road": 5516,
+    "rail": 339,
+    "metro": 263,
+    "tram": 1891,
+    "use": 5284
+  },
+  "use": {
+    "field": "c_kayttark",
+    "codeList": "RA_KAYTTARK",
+    "source": "https://kartta.hel.fi/avoindata/dokumentit/Rakennusrekisteri_avoindata_metatiedot_20160601.pdf"
+  },
+  "energy": {
+    "status": "available",
+    "retrieved": "2026-09-19T16:56:45.226Z",
+    "configUrl": "https://kartta.hel.fi/3d/atlas/config.json",
+    "tilesetUrl": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/tileset.json",
+    "field": "attributes.energiatod_luokka",
+    "metric": "Archived energy certificate class (2013 scheme); not measured annual consumption or a current rating",
+    "join": "Exact CityGML buildingId = Atlas batch-table id. Conflicting certificate records become unknown. No spatial or RATU fallback.",
+    "matched": 345,
+    "sources": [
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9322/1355.b3dm",
+        "bytes": 1221936,
+        "sha256": "7efb7ed129dd1214019bcb55c60a7825bc3e5318712f4824831f558470f437d7"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9322/1356.b3dm",
+        "bytes": 25000,
+        "sha256": "0cf15c2cac75a8cc4c2463123c4428e1b0692f8a01f60f12e5a68a40fce4b76d"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9322/1357.b3dm",
+        "bytes": 358584,
+        "sha256": "e6c7de7c798c1e900d7b13d802e0e1c59302ec46d5fd566168a256b9f7bcb505"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9322/1358.b3dm",
+        "bytes": 209152,
+        "sha256": "8c85e057b752c6bd0e1139383e3fe0ec86f244f7da0e721ec8a66fae37954e12"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9323/1355.b3dm",
+        "bytes": 5687640,
+        "sha256": "7feb8faeaedb8006ffec965932e799ccca719a32229e7a49e4416b4006846986"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9323/1356.b3dm",
+        "bytes": 3372760,
+        "sha256": "2b742ff4c4f7ab5b37ae80f69f5989142bbec16d9c779ef8d15746440af11924"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9323/1357.b3dm",
+        "bytes": 2280928,
+        "sha256": "89446778d1e4218eba9aab1ac308b258f0a7a41a8ac5e7dd6b4a896c6c5ddace"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9323/1358.b3dm",
+        "bytes": 2450040,
+        "sha256": "eacd2dcd81b5c2af0f82337ba6a97dbccb5bd7bf3c387555ef2004c7e9132042"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9324/1355.b3dm",
+        "bytes": 5894976,
+        "sha256": "272a42ed193459872cd7d0d9f3c93617ef0559afd41e014d357b6a8cdd01ae12"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9324/1356.b3dm",
+        "bytes": 5093008,
+        "sha256": "c71c3e739cc902b6d7b159efe048b9649f652d88117b89f9d5137b37c3dfe0e1"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9324/1357.b3dm",
+        "bytes": 1567272,
+        "sha256": "6c71ca9af7bca7369173fba8ec27808672bcf3260f6eea97b9e12754648fe421"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9324/1358.b3dm",
+        "bytes": 4308064,
+        "sha256": "276b52343d82941c4dec982f0b3e9221b54fc2bb3af9e96c6c50316d466388fc"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9325/1355.b3dm",
+        "bytes": 4309424,
+        "sha256": "9764667a51fea522dfe4df4674099d58fa9a1afb19ed065b14a141d7f9dc6948"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9325/1356.b3dm",
+        "bytes": 7653208,
+        "sha256": "6ceaaed85077af0315a4543d2a76f2f7439a3e3c4735decce175b3798f3f1783"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9325/1357.b3dm",
+        "bytes": 3082608,
+        "sha256": "bbf9e731db75bd29d7b52a945cdf40de57d371e9e11863b548948527cf27d735"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9325/1358.b3dm",
+        "bytes": 854024,
+        "sha256": "2006874b6e813ea1d4ea62b9e7f0504b00044a16aefee84f1ef8e862e6257e4f"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9326/1355.b3dm",
+        "bytes": 2667800,
+        "sha256": "389b9735f67d044db3ac1d37c0b9cad23a60a62d707e6d085587d89498958166"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9326/1356.b3dm",
+        "bytes": 6963392,
+        "sha256": "c76d8c9c7218fa3c5c06dcecedeea22c785cc241bc059276f72b5751feaea6f2"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9326/1357.b3dm",
+        "bytes": 19474544,
+        "sha256": "8135809fa1e50ad7122b7d05d45112a7b931becc86a3f406ce14b5efa9996550"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9326/1358.b3dm",
+        "bytes": 4470016,
+        "sha256": "d964433ef9126b1857389f3570f88f7ebf8af9b75c20b82a1fff4d12d6124037"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9327/1355.b3dm",
+        "bytes": 9311200,
+        "sha256": "5c6d3447bccb19c1879415461c9116c7267bcc2cdeee928d45757f5c341f87dc"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9327/1356.b3dm",
+        "bytes": 12860888,
+        "sha256": "349e39d915396b73a9d3ec27eea1dfac246e3c9651b8d6b5094cf40bedc1e23a"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9327/1357.b3dm",
+        "bytes": 21644456,
+        "sha256": "4f9b2905a537be5936e45f0b537bdcafc1ea13d0344bc9052f5770ea74afcfa2"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9327/1358.b3dm",
+        "bytes": 7360816,
+        "sha256": "61c87163e6ce5a1bbbdda286e8840a20d187b8db089e0cae06ad0bd5e4978bcf"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9328/1355.b3dm",
+        "bytes": 7461104,
+        "sha256": "a50ebb22a8134b98166c3fafc7d012e7352cac976c131f48fa0ac85838ae5614"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9328/1356.b3dm",
+        "bytes": 6183392,
+        "sha256": "0454a9b1bcc71acb0f0c148e954c5c7620febaefd96866a272a38f30add55000"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9328/1357.b3dm",
+        "bytes": 4847312,
+        "sha256": "0e61c9207cd24d2fd2e42fd78cc26d435ce9ca5f397916658f16eb8f7d3c5cc4"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9328/1358.b3dm",
+        "bytes": 652392,
+        "sha256": "2b0518c7d7105f3a7cc6c31e2103d6dfed967ecb332e4b64c8021395e7baeca0"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9329/1355.b3dm",
+        "bytes": 1644920,
+        "sha256": "d1edb53abbcc8116724930e5e9d3cf2e6b5cb6b8bec6b49ed76903e7e7be188c"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9329/1356.b3dm",
+        "bytes": 2223648,
+        "sha256": "c84be0adfd343228f3b4fe385fe680e749470be9453e37710dfd47ed94c92253"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9329/1357.b3dm",
+        "bytes": 531304,
+        "sha256": "dae99ea799a83d5f5e331efcd9286b5e8b44b7f7a11b39e1b378f03c69186376"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9329/1358.b3dm",
+        "bytes": 1150032,
+        "sha256": "759df63da477863d0f2ba49a4a5bd48e155014b5b8a9f3025ea8230638f8a83c"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9330/1355.b3dm",
+        "bytes": 1033760,
+        "sha256": "cfec15762947cd11b921d77ff2a3cebdf2d82676c6e6c7e361ac341fa4af2131"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9330/1356.b3dm",
+        "bytes": 3871312,
+        "sha256": "927ae40f223f804e15b6ab18feff3d8521bc4c8ebde84332a57b009ab5f6e17c"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9330/1357.b3dm",
+        "bytes": 2695552,
+        "sha256": "dd81f8b5c4779ec45ce6fdcf8780edd52c8b786fdc89e5bae269b50bf4bfecf4"
+      },
+      {
+        "url": "https://kartta.hel.fi/3d/atlas/datasource-data/4737bb9d-f3a3-4ed8-80f0-7053c894f354/13/9330/1358.b3dm",
+        "bytes": 325616,
+        "sha256": "d9a13ff67a7d5b5cdd391af933869f199f12d11293502cade985c3846356652d"
+      }
+    ],
+    "license": "City of Helsinki, CC BY 4.0"
+  }
+}

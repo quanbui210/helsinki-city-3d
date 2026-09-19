@@ -1,9 +1,12 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import sharp from 'sharp';
-import {RAW,PUBLIC} from './config.js';
+import proj4 from 'proj4';
+import {MAP_BBOX,PROJECTION,RAW,PUBLIC} from './config.js';
 const load=async name=>JSON.parse(await readFile(`${RAW}context/${name}.geojson`,'utf8')).features;
 const [land,areas,lines,names,districts,registeredNames]=await Promise.all(['Maavesi_maa_alueet_yleistetty','Opaskartta_alue','Opaskartta_muuviiva','Opaskartta_nimisto','Kaupunginosajako','Nimisto_piste_rekisteritiedot'].map(load));
-const rectangle=[24.89,60.155,25.075,60.223],size=6144;
+const toLonLat=proj4(PROJECTION,'EPSG:4326');
+const sw=toLonLat.forward([MAP_BBOX[0],MAP_BBOX[1]]),ne=toLonLat.forward([MAP_BBOX[2],MAP_BBOX[3]]);
+const rectangle=[Math.floor(sw[0]*1000)/1000,Math.floor(sw[1]*1000)/1000,Math.ceil(ne[0]*1000)/1000,Math.ceil(ne[1]*1000)/1000],size=6144;
 const xy=([lon,lat])=>[(lon-rectangle[0])/(rectangle[2]-rectangle[0])*size,(rectangle[3]-lat)/(rectangle[3]-rectangle[1])*size];
 const path=coordinates=>coordinates.map(r=>r.map((p,i)=>`${i?'L':'M'}${xy(p).map(v=>v.toFixed(2)).join(' ')}`).join(' ')+'Z').join(' ');
 const polygons=g=>g?.type==='Polygon'?[g.coordinates]:g?.type==='MultiPolygon'?g.coordinates:[];
@@ -43,5 +46,5 @@ for(const d of districts){const entries=manifest.filter(b=>contains(b.position,d
  const position=[0,1].map(i=>entries.reduce((sum,b)=>sum+b.position[i],0)/entries.length);
  neighborhoods.push({id:d.properties.tunnus,name,position,count:entries.length,known:entries.filter(b=>b.constructionYear!==null).length,bounds:d.geometry});
 }
-await writeFile(`${PUBLIC}map/context.json`,JSON.stringify({rectangle,labels,neighborhoods,source:JSON.parse(await readFile(`${RAW}context/source.json`,'utf8')),note:'Present-day reference geography. Partial 2019 3D coverage.'}));
+await writeFile(`${PUBLIC}map/context.json`,JSON.stringify({rectangle,labels,neighborhoods,source:JSON.parse(await readFile(`${RAW}context/source.json`,'utf8')),note:'Present-day reference geography. Partial 3D coverage: 2019 crop plus official citydb increments.'}));
 console.log(`Created basemaps, ${labels.length} official labels, ${neighborhoods.length} neighborhoods.`,neighborhoods.map(n=>`${n.name}: ${n.count}`));

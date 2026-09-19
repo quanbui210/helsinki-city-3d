@@ -1,0 +1,22 @@
+{
+  "source": "City of Helsinki, Helsinki_osoiteluettelo WFS",
+  "license": "CC BY 4.0",
+  "retrieved": "2026-09-19T13:19:43.772Z",
+  "requests": [
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=0&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=5000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=10000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=15000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=20000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=25000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=30000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=35000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=40000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=45000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=50000&sortBy=id",
+    "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=avoindata%3AHelsinki_osoiteluettelo&outputFormat=application%2Fjson&srsName=CRS%3A84&count=5000&startIndex=55000&sortBy=id"
+  ],
+  "records": 58283,
+  "sha256": "1e7f9bcd746d0ce57a2eddb6f33a5945b53b98177479c5c70de6cebce49a047e",
+  "note": "Official address points; no nearest-building inference. 3D building coverage remains partial."
+}

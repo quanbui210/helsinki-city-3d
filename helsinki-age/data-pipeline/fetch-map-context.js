@@ -1,8 +1,8 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
-import {RAW,REGISTER_URL} from './config.js';
+import {MAP_BBOX,RAW,REGISTER_URL} from './config.js';
 await mkdir(`${RAW}context`,{recursive:true});
 const layers=['Maavesi_maa_alueet_yleistetty','Opaskartta_alue','Opaskartta_muuviiva','Opaskartta_nimisto','Kaupunginosajako','Nimisto_piste_rekisteritiedot'];
-const bbox=[25494000,6671800,25503500,6678200];
+const bbox=MAP_BBOX;
 for(const layer of layers){
  if(process.argv.includes('--missing')){try{await readFile(`${RAW}context/${layer}.geojson`);continue;}catch{}}
  const all=[];const seen=new Set();

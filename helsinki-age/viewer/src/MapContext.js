@@ -1,11 +1,26 @@
 import * as C from 'cesium';
 const rank={district:4,water:3,place:1,street:0};
 export class MapContext {
- constructor(viewer,data){this.viewer=viewer;this.data=data;this.enabled=true;this.theme='dusk';this.elements=[];this.container=document.querySelector('#map-labels');this.ready=this.setTheme('dusk');
+ constructor(viewer,data){
+  this.viewer=viewer;this.data=data;this.enabled=true;this.theme='dusk';this.elements=[];this.container=document.querySelector('#map-labels');
+  // The prepared basemap is the only honest ground. Outside it the ellipsoid
+  // shows tessellation/shadow cascade strips, which got worse as the tileset AABB grew.
+  viewer.scene.globe.cartographicLimitRectangle=C.Rectangle.fromDegrees(...data.rectangle);
+  this.ready=this.setTheme('dusk');
   this.labels=data.labels.map(label=>({...label,world:C.Cartesian3.fromDegrees(...label.position,3)})).sort((a,b)=>(rank[b.type]+(b.major?2:0))-(rank[a.type]+(a.major?2:0)));
   let previous=0;viewer.scene.postRender.addEventListener(()=>{const now=performance.now();if(now-previous<100)return;previous=now;this.layout();});
  }
- async setTheme(theme){this.theme=theme;const provider=await C.SingleTileImageryProvider.fromUrl(`/map/${theme}.png`,{rectangle:C.Rectangle.fromDegrees(...this.data.rectangle),credit:'Map data © City of Helsinki · CC BY 4.0'});if(this.theme!==theme)return;if(this.layer)this.viewer.imageryLayers.remove(this.layer,true);this.layer=this.viewer.imageryLayers.addImageryProvider(provider);this.viewer.scene.globe.baseColor=C.Color.fromCssColorString(theme==='day'?'#89b6bc':'#102e3c');document.body.dataset.theme=theme;}
+ async setTheme(theme){
+  this.theme=theme;
+  const water=theme==='day'?'#89b6bc':'#102e3c';
+  const provider=await C.SingleTileImageryProvider.fromUrl(`/map/${theme}.png`,{rectangle:C.Rectangle.fromDegrees(...this.data.rectangle),credit:'Map data © City of Helsinki · CC BY 4.0'});
+  if(this.theme!==theme)return;
+  if(this.layer)this.viewer.imageryLayers.remove(this.layer,true);
+  this.layer=this.viewer.imageryLayers.addImageryProvider(provider);
+  this.viewer.scene.globe.baseColor=C.Color.fromCssColorString(water);
+  this.viewer.scene.backgroundColor=C.Color.fromCssColorString(water);
+  document.body.dataset.theme=theme;
+ }
  layout(){
   const canvas=this.viewer.scene.canvas,w=canvas.clientWidth,h=canvas.clientHeight,height=this.viewer.camera.positionCartographic.height;
   const camera=this.viewer.camera;const key=[camera.positionWC.x.toFixed(1),camera.positionWC.y.toFixed(1),camera.positionWC.z.toFixed(1),camera.heading.toFixed(4),camera.pitch.toFixed(4),w,h,this.enabled].join(':');if(key===this.lastKey)return;this.lastKey=key;

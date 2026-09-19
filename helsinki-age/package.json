@@ -10,13 +10,21 @@
     "data:fetch": "node data-pipeline/fetch-wfs-buildings.js",
     "data:join": "node data-pipeline/join-manifest.js",
     "data:convert": "node data-pipeline/convert-citygml-to-3dtiles.js",
-    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build",
+    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build && npm run data:layers && npm run data:energy && npm run data:addresses",
     "test": "node --test data-pipeline/*.test.js",
     "test:browser": "node tests/smoke.js",
     "data:map:fetch": "node data-pipeline/fetch-map-context.js",
-    "data:map:build": "node data-pipeline/build-map-context.js"
+    "data:map:build": "node data-pipeline/build-map-context.js",
+    "data:layers": "node data-pipeline/enrich-layers.js",
+    "test:layers": "node tests/layers-smoke.js",
+    "data:energy": "node data-pipeline/enrich-energy.js",
+    "data:addresses": "node data-pipeline/fetch-addresses.js",
+    "data:expand": "node data-pipeline/fetch-expansion.js && node data-pipeline/join-expansion.js && node data-pipeline/convert-expansion.js && npm run data:map:fetch && npm run data:map:build && npm run data:layers && npm run data:energy",
+    "test:lens": "node tests/lens-smoke.js"
   },
   "dependencies": {
+    "@turf/bbox": "^7.4.0",
+    "@turf/boolean-point-in-polygon": "^7.4.0",
     "@xmldom/xmldom": "^0.8.10",
     "cesium": "^1.145.0",
     "earcut": "^3.2.3",
