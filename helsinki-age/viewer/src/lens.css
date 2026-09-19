@@ -57,9 +57,12 @@ body:not([data-layer=age]) .building-card{max-height:min(calc(100dvh - 230px),ca
  body .building-card,body:not([data-layer=age]) .building-card{max-height:min(calc(100dvh - 230px),calc(var(--lens-top,100dvh) - 155px));min-height:0}
 }
 /* The selection card keeps identity and actions visible; only its body scrolls. */
-body .building-card{display:flex;flex-direction:column;width:350px;padding:0;overflow:hidden}
+body .building-card{display:flex;flex-direction:column;width:380px;padding:0;overflow:hidden}
+body .building-card.is-expanded{width:min(520px,calc(100vw - 48px))}
 .record-header{position:relative;flex:0 0 auto;padding:20px 20px 0;background:#172d36;border-bottom:1px solid #d9c19b30}
-.building-card .record-header h2{font-size:25px;line-height:1.2;margin:0 27px 12px 0;max-height:90px;overflow:auto}
+.building-card .record-header h2{font-size:25px;line-height:1.2;margin:0 72px 12px 0;max-height:90px;overflow:auto}
+.record-expand{position:absolute;right:44px;top:9px;width:32px;height:32px;border-radius:8px;font-size:15px;line-height:1;color:#d6c5a9}
+.record-expand:hover,.record-expand:focus-visible{background:#d9c19b18}
 .record-listing-summary{display:block;text-align:left;width:100%;padding:10px 12px;border:1px solid #d9c19b35;background:#d9c19b0b;border-radius:8px;font:500 11px/1.5 'Segoe UI',sans-serif;color:#c1cfca}
 .record-listing-summary[data-state=found]{background:#d9c19b22;border-color:#d9c19b75;color:#ffe2aa}
 .record-listing-summary:hover{background:#d9c19b30}
@@ -68,12 +71,16 @@ body .building-card{display:flex;flex-direction:column;width:350px;padding:0;ove
 .record-body>.eyebrow{font-size:8px;margin-bottom:7px}.record-body #building-listings{margin:0;padding:0;border:0}
 .record-body #building-listings>h3{font-size:19px}.record-body #building-listings article strong{font-size:12px}.record-body #building-listings p{font-size:11px;line-height:1.65}
 #selected-address-marker{position:absolute;z-index:3;top:0;left:0;width:12px;height:12px;margin:-6px 0 0 -6px;pointer-events:none;border:2px solid #ffe7a6;border-radius:50%;box-shadow:0 0 0 5px #ffe7a628,0 0 15px #ffe7a654;background:#ffe7a6}
-@media(max-width:700px){body .building-card{width:calc(100% - 28px)}.record-header{padding:15px 16px 0}.building-card .record-header h2{font-size:23px;margin-bottom:10px}.record-body{padding:15px 16px 20px}.record-tabs button{padding:10px 0}.record-listing-summary{padding:9px 10px}}
+@media(max-width:700px){body .building-card,body .building-card.is-expanded{width:calc(100% - 28px)}.record-expand{display:none}.record-header{padding:15px 16px 0}.building-card .record-header h2{font-size:23px;margin:0 36px 10px 0}.record-body{padding:15px 16px 20px}.record-tabs button{padding:10px 0}.record-listing-summary{padding:9px 10px}}
 @media(max-width:700px){body .building-card,body:not([data-layer=age]) .building-card{top:auto;bottom:calc(100dvh - var(--lens-top,100dvh) + 12px);max-height:min(52dvh,calc(var(--lens-top,100dvh) - 155px));border-radius:18px}body:has(.building-card:not([hidden])) .explore-panel{visibility:hidden}}
 .record-provenance{border-top:1px solid #c8d0c12b;margin:16px 0;padding-top:14px}.record-provenance summary{font-size:11px;color:#b9c6bf;cursor:pointer}.record-provenance dl{margin-top:15px}.record-provenance p{color:#aebeb9}.record-body>dl{margin-bottom:12px}
 @media(max-height:500px) and (max-width:700px){body .building-card,body:not([data-layer=age]) .building-card{top:12px;bottom:12px;width:min(350px,calc(100vw - 28px));max-height:calc(100dvh - 24px)}}
 
-#building-parking-context{border-top:1px solid var(--line, #ffffff20);margin-top:16px;padding-top:16px}#building-parking-context h3{font-size:13px}#building-parking-context p,#building-parking-context a{font-size:11px;line-height:1.6}#building-parking-context strong{font-size:15px;color:#cde1cf}.parking-breakdown{display:grid;grid-template-columns:1fr auto;gap:5px;font-size:11px}.parking-breakdown dd{margin:0}#building-parking-context button{margin:6px 0;padding:8px 10px;border:1px solid #ffffff30;border-radius:8px;background:#ffffff0a;color:inherit;cursor:pointer}
+#building-parking-context{border-top:1px solid var(--line, #ffffff20);margin-top:16px;padding-top:16px}#building-parking-context h3{font-size:13px}#building-parking-context p{font-size:11px;line-height:1.6}#building-parking-context strong{font-size:15px;color:#cde1cf}.parking-breakdown{display:grid;grid-template-columns:1fr auto;gap:5px;font-size:11px}.parking-breakdown dd{margin:0}
+.parking-actions{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-top:10px}
+.parking-map-link{display:inline;width:auto;margin:0;padding:0;border:0;border-radius:0;background:none;font-size:11px;color:#e2c7a3;text-decoration:underline;text-underline-offset:3px}
+.parking-map-link:hover{color:#f4e4c4;background:none}
+.parking-source-link{font-size:10px;color:#9aafa9}
 
 .tiered-clusters{position:absolute;inset:0;pointer-events:none;z-index:2}.tiered-cluster{position:absolute;transform:translate(-50%,-50%);min-width:34px;height:34px;padding:0 7px;border-radius:50%;border:2px solid #b9eee6;background:#256d75;color:#fff;font:600 12px system-ui;box-shadow:0 2px 8px #001f2f70;pointer-events:auto;cursor:pointer}.tiered-cluster:hover,.tiered-cluster:focus-visible{background:#398e97;outline:2px solid #fff;outline-offset:3px}
 

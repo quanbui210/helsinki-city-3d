@@ -20,7 +20,9 @@ export class ParkingAreas {
       add('p',`Resident permit zone: ${resident?`${resident.id} · ${resident.name}`:'No mapped match'}. Paid zone: ${result.paidZoneId??'No mapped match'}.`);
       add('p','Zone boundaries are approximate. Permit eligibility and permitted hours depend on local rules and street signs.');
     }
-    const button=add('button','View parking on map →');button.type='button';button.onclick=onOpen;
-    const link=add('a','City of Helsinki · sources & methodology ↗');link.href='/parking.json';link.target='_blank';link.rel='noopener';
+    const actions=add('div','','parking-actions');
+    const button=document.createElement('button');button.type='button';button.className='parking-map-link';button.textContent='View parking on map →';button.onclick=onOpen;
+    const link=document.createElement('a');link.className='parking-source-link';link.textContent='Sources & methodology ↗';link.href='/parking.json';link.target='_blank';link.rel='noopener';
+    actions.append(button,link);
   }
 }
