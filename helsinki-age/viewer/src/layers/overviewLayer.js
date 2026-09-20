@@ -1,10 +1,11 @@
+// Same shopper-priority order as the main tab strip: price and noise first.
 const lenses=[
-  {id:'age',name:'Age',blurb:'Official completion year'},
+  {id:'price',name:'Price',blurb:'Postal-area sale & rent'},
   {id:'noise',name:'Noise',blurb:'2022 modeled street noise'},
+  {id:'age',name:'Age',blurb:'Official completion year'},
   {id:'energy',name:'Energy',blurb:'Archived 2013 certificate'},
   {id:'use',name:'Use',blurb:'Register purpose'},
   {id:'parking',name:'Parking',blurb:'Public street parking nearby'},
-  {id:'price',name:'Price',blurb:'Postal-area sale & rent'},
 ];
 
 export default {

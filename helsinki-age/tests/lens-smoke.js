@@ -18,20 +18,30 @@ try{
  await page.locator('#search-results button').first().click();await page.waitForFunction(()=>!__atlas.nav.flight);
  assert.equal(await page.locator('#building-address').textContent(),building.address);
  assert.equal(await page.locator('#building-card').isVisible(),true);
- await page.locator('#building-prompt').click();assert.equal(await page.evaluate(()=>__atlas.layerManager.activeId),'noise');
+ // See how loud this street is → is a secondary action inside the "Full
+ // details" dialog now, not the compact default view.
+ await page.locator('#open-building-detail').click();await page.locator('#building-prompt').click();assert.equal(await page.evaluate(()=>__atlas.layerManager.activeId),'noise');
  assert.equal(await page.locator('#building-address').textContent(),building.address);
  await page.screenshot({path:artifactDir+'/search-noise.png'});
- await page.locator('button[data-layer="energy"]').click();assert.match(await page.locator('#building-layer-value').textContent(),/Archived class/);
+ await page.locator('button[data-layer="energy"]').click();await page.locator('#open-building-detail').click();assert.match(await page.locator('[data-detail=energy] .detail-body').textContent(),/Archived class/);await page.locator('#close-building-detail').click();
  const fullest=await page.evaluate(()=>__atlas.manifest.reduce((a,b)=>JSON.stringify(b).length>JSON.stringify(a).length?b:a));
  await page.evaluate(record=>__atlas.showBuilding(record),fullest);
  const checkCard=async()=>{
   const bounds=await page.locator('#building-card').boundingBox(),viewport=page.viewportSize();
   assert.ok(bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.width<=viewport.width&&bounds.y+bounds.height<=viewport.height);
   assert.equal(await page.locator('#building-card').evaluate(e=>e.scrollWidth<=e.clientWidth),true,'long content must wrap, not clip horizontally');
+  // The compact grid itself never grows uneven card heights; the relocated
+  // prompt is reachable one layer down, inside the detail dialog.
+  await page.locator('#open-building-detail').click();
   await page.locator('#building-prompt').scrollIntoViewIfNeeded();assert.ok(await page.locator('#building-prompt').isVisible());
+  await page.locator('#close-building-detail').click();
  };
  await checkCard();await page.screenshot({path:artifactDir+'/record-desktop.png'});
- await page.setViewportSize({width:390,height:844});await checkCard();await page.screenshot({path:artifactDir+'/record-mobile.png'});
+ // setViewportSize resolves before the page's own 'resize' listener (which
+ // recomputes --lens-top for the new width) has actually run, so give it a
+ // frame to settle before measuring — same pattern used below for style resets.
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ await checkCard();await page.screenshot({path:artifactDir+'/record-mobile.png'});
  await page.locator('#close-building').click();await page.locator('button[data-layer="overview"]').click();
  assert.equal(await page.evaluate(()=>__atlas.tileset.style===undefined),true);
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

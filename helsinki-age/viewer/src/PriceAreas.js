@@ -31,6 +31,10 @@ export class PriceAreas {
     const trend=document.createElement('p');trend.textContent=formatTrend(priceTrend(area,metric));
     container.append(title,value,period,trend);
   }
+  summary(position){
+    const area=this.lookup.sale(position);
+    return area?`${formatPrice(priceValue(area,'sale'),'sale')} · ${area.postalCode}`:'No postal-area match';
+  }
   buildingContext(container,position){
     container.replaceChildren();
     const heading=document.createElement('h3');heading.textContent='Around this address';container.append(heading);

@@ -7,6 +7,10 @@ const expectedFinal={x:-40,y:40,z:90};
 const near=(a,b,tol=4)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)<=tol;
 
 async function capture(page){
+  // Cinematic view is a secondary action inside the "Full details" dialog
+  // now; opening it closes the dialog itself (see BuildingPanel.closeDetail
+  // in main.js's #cinematic-view handler) so the flythrough is unobstructed.
+  await page.locator('#open-building-detail').click();
   const [download]=await Promise.all([page.waitForEvent('download',{timeout:15000}),page.locator('#cinematic-view').click()]);
   await page.waitForFunction(()=>document.querySelector('#cinematic-view')?.getAttribute('aria-busy')!=='true');
   const path=await download.path();
@@ -25,8 +29,10 @@ try{
   assert.notEqual(first.buildingId,second.buildingId);
   await page.evaluate(r=>__atlas.selectSearchResult({buildingId:r.buildingId,position:r.position,range:650}),first);
   await page.waitForFunction(()=>!__atlas.nav.flight);
+  await page.locator('#open-building-detail').click();
   assert.equal(await page.locator('#cinematic-view').isVisible(),true);
   await page.locator('#cinematic-view').scrollIntoViewIfNeeded();
+  await page.locator('#close-building-detail').click();
   const png1=await capture(page);
   assert.equal(png1[0],0x89);assert.equal(png1[1],0x50);assert.equal(png1[2],0x4e);assert.equal(png1[3],0x47);
   const offset1=await page.evaluate(pos=>__atlas.cinematic.localCameraOffset(__atlas.viewer,pos),first.position);

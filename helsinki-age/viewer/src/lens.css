@@ -1,40 +1,83 @@
-:root{--glass:#172d36ed;--glass-border:#c8d0c12b;--gold:#d9c19b;--panel-radius:14px}
+/* Panels sit on a deeper blue-black, hue-separated from the map's grey-green
+   tones; lightness contrast alone read as one flat dark mass. */
+:root{--glass:#0f1830f2;--glass-border:#8fa3d02e;--gold:#d9c19b;--panel-radius:14px;--panel-shadow:0 24px 60px -14px #00000082,0 4px 14px -2px #00000060}
 body{font-family:'Segoe UI',sans-serif}
 header{inset:26px 30px auto;gap:12px 30px;z-index:8}
-#weather-hud{background:#162b35e8;border:1px solid #8da7ad30;border-radius:24px;padding:10px 14px;font-size:11px;color:#d8dfdd;backdrop-filter:blur(18px);white-space:nowrap;margin-left:auto}
+#weather-hud{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:10px 14px;font-size:11px;color:#d8dfdd;backdrop-filter:blur(26px);box-shadow:var(--panel-shadow);white-space:nowrap;margin-left:auto}
 #weather-hud[hidden]{display:none}
 .brand{font:400 25px/1.15 Georgia,serif;letter-spacing:-.6px;min-width:235px}.brand-mark{font:400 30px Georgia,serif;border:1px solid var(--gold);border-radius:50%;width:39px;height:39px;text-align:center;line-height:37px;letter-spacing:0}.brand-mark span{display:none}.brand-sub{font:500 7px/1.6 'Segoe UI',sans-serif;letter-spacing:1.5px;margin-top:8px}
-.search-wrap,.explore-panel,.building-card,.data-layers,.era-card,.map-tools,.timeline,dialog{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--panel-radius);backdrop-filter:blur(22px);box-shadow:0 10px 35px #06131b20}
+.search-wrap,.explore-panel,.building-card,.data-layers,.era-card,.map-tools,.timeline,dialog{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--panel-radius);backdrop-filter:blur(26px);box-shadow:var(--panel-shadow)}
 .search-wrap{width:560px;max-width:45vw;padding:17px 20px;border-color:#dac7a65c}.search-wrap input{font-size:13px;color:#eee9de}.search-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px #d9c19b12}.search-wrap input::placeholder{color:#b9c4c1}
-#search-results{background:#172d36fa;border:1px solid var(--glass-border);border-radius:12px;max-height:min(420px,65vh);overflow:auto}#search-results button{padding:14px 17px}#search-results strong{white-space:normal;overflow-wrap:anywhere;font-size:12px}#search-results span{font-size:9px;white-space:normal;line-height:1.5}
-.intro{top:137px;left:32px;width:240px}.intro .eyebrow{font-size:8px;letter-spacing:1.6px}h1{font:400 42px/1.1 Georgia,serif;letter-spacing:-1.4px;margin:18px 0}.intro p{font-size:11px;line-height:1.9;max-width:218px;color:#bfcbc7}
-.explore-panel{top:355px;left:30px;width:238px;padding:18px}.districts{max-height:126px}.district-button{font-size:10px}.explore-panel .location{margin-top:15px}.coverage-note{font-size:8px}.panel-divider{margin:16px 0}
+#search-results{background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;max-height:min(420px,65vh);overflow:auto;box-shadow:var(--panel-shadow)}#search-results button{padding:14px 17px}#search-results strong{white-space:normal;overflow-wrap:anywhere;font-size:12px}#search-results span{font-size:9px;white-space:normal;line-height:1.5}
+.intro{top:137px;left:32px;width:240px;transition:opacity .45s ease,transform .45s ease}.intro .eyebrow{font-size:8px;letter-spacing:1.6px}h1{font:400 42px/1.1 Georgia,serif;letter-spacing:-1.4px;margin:18px 0}.intro p{font-size:11px;line-height:1.9;max-width:218px;color:#bfcbc7}
+.intro.is-collapsed{opacity:0;transform:translateY(-16px);pointer-events:none}
+.explore-panel{top:355px;left:30px;width:238px;padding:18px;transition:top .5s cubic-bezier(.4,0,.2,1)}.districts{max-height:126px}.district-button{font-size:10px}.explore-panel .location{margin-top:15px}.coverage-note{font-size:8px}.panel-divider{margin:16px 0}
+/* First interaction (search/pan/zoom/building click) collapses the hero once
+   per session, freeing this space for the neighborhoods panel. */
+body.hero-collapsed .explore-panel{top:137px}
 .data-layers,body:not([data-layer=age]) .data-layers{top:auto;bottom:55px;left:50%;width:660px;max-width:calc(100% - 60px);transform:translateX(-50%)}
 .lens-tabs{padding:7px;gap:4px}.lens-tabs button{font-size:11px;padding:10px 8px;color:#bac8c6}.lens-tabs button[aria-pressed=true]{background:var(--gold);color:#21343b}.lens-tabs button[data-layer=overview][aria-pressed=true]{background:#e5d9bf14;color:#ece4d4;box-shadow:inset 0 0 0 1px #e6d6b52a}
-.lens-toggle{font-size:9px;letter-spacing:.6px;text-transform:uppercase}
-.lens-heading h2{font:400 21px/1.2 Georgia,serif}.lens-content{padding:15px 19px}.lens-description,.lens-controls p{font-size:10px;line-height:1.7}.lens-legend{gap:9px 16px}.lens-legend>span{font-size:9px}.lens-source{font-size:9px}
+/* style.css still ships `.lens-toggle[aria-expanded=false]{background:#dfc49f;
+   color:#20333d;font-weight:700}` — the same solid gold as an active tab —
+   plus a stretched pill (`align-items:stretch` on `.lens-chrome`, 8px radius,
+   10px padding). Same specificity as a later `.lens-toggle` rule, so it
+   wins or fights depending on bundle order. Beat both states from `body
+   .data-layers` and never paint a fill. Collapsed control sits on the
+   mini-legend row, not in the tab strip, so it cannot read as an 8th layer. */
+body .data-layers .lens-dock-row{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line)}
+body .data-layers:not(.is-collapsed) .lens-dock-row{display:none;border-top:0}
+body .data-layers .lens-dock-row .lens-mini-legend{flex:1;min-width:0;border-top:0}
+body .data-layers .lens-dock-action{display:flex;align-items:center;flex:0 0 auto;padding:0 14px 0 12px;border-left:1px solid #ffffff36}
+body .data-layers .lens-dock-action:empty{display:none;padding:0;border:0}
+body .data-layers .lens-content{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px}
+body .data-layers .lens-heading{grid-column:1;grid-row:1}
+body .data-layers .lens-controls,body .data-layers .lens-legend,body .data-layers .lens-description,body .data-layers .lens-source{grid-column:1/-1}
+body .data-layers .lens-drawer-bar{display:flex;justify-content:flex-end;grid-column:2;grid-row:1;align-self:center}
+body[data-layer=age] .data-layers .lens-legend{grid-column:1;grid-row:1;align-self:center}
+body .data-layers .lens-drawer-bar:empty,body .data-layers.is-collapsed .lens-drawer-bar{display:none}
+body .data-layers .lens-toggle,
+body .data-layers .lens-toggle[aria-expanded=true],
+body .data-layers .lens-toggle[aria-expanded=false]{flex:0 0 auto;align-self:center;height:auto;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;font-weight:400;font-size:10px;letter-spacing:.2px;text-transform:none;color:#c4b49a;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+body .data-layers .lens-toggle:hover,
+body .data-layers .lens-toggle:focus-visible{background:transparent;color:#e6d5b9}
+.lens-heading h2{font:400 21px/1.2 Georgia,serif}.lens-content{padding:15px 19px;border-top:1px solid var(--line)}.lens-description,.lens-controls p{font-size:10px;line-height:1.7}.lens-legend{gap:9px 16px}.lens-legend>span{font-size:9px}.lens-source{font-size:9px}
 .noise-mode-row button{font-size:10px;padding:7px 5px}
 body[data-layer=overview] .lens-legend,body[data-layer=overview] .lens-source{display:none}body[data-layer=overview] .lens-description{margin:6px 0 10px;color:#afbfbd}
+/* Slim dock: tabs never auto-open the full drawer below (see LayerSwitcher's
+   render()); this condensed strip is the permanent stand-in so collapsing the
+   drawer never leaves map colors unexplained. Hidden once the full drawer is
+   open (it repeats the same ramp/swatches with more detail there — showing
+   both read as a duplicated legend) and always for Overview, which has no
+   data coloring active. */
+.lens-chrome{border-bottom:0}
+.lens-mini-legend{display:flex;align-items:center;gap:10px;padding:9px 16px;flex-wrap:wrap;border-top:1px solid var(--line)}
+.lens-mini-legend:empty,body[data-layer=overview] .lens-mini-legend,.data-layers:not(.is-collapsed) .lens-mini-legend{display:none;border-top:0;padding:0}
+.lens-mini-legend.is-ramp{flex-wrap:nowrap}
+.mini-ramp{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.mini-ramp-bar{flex:1;height:6px;border-radius:999px;box-shadow:inset 0 0 0 1px #ffffff22;min-width:36px}
+.mini-ramp-end{font-size:8px;letter-spacing:.2px;color:#a9c1c4;white-space:nowrap;flex-shrink:0}
+.mini-swatch{display:flex;align-items:center;gap:5px;font-size:8px;color:#c7d2ce;white-space:nowrap}
+.mini-swatch i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 body[data-layer=age] .data-layers{top:102px;bottom:auto;width:560px}body[data-layer=age] .lens-content{padding:0 15px 8px}body[data-layer=age] .lens-legend{justify-content:center}
 .era-card{top:120px;right:30px;width:185px}.era-year{font-family:Georgia,serif;letter-spacing:-2px}.year-current strong{font-family:Georgia,serif}
 .map-tools{right:30px;top:42%;padding:5px}.map-tools button{width:34px;height:34px}.north{right:92px;bottom:68px}
 .map-caption,body:not([data-layer=age]) .map-caption{bottom:28px;left:32px}.map-instructions{display:none}body[data-layer=age] .map-caption{bottom:235px}
 .building-card{position:fixed;z-index:7;left:auto;right:24px;top:108px;bottom:auto;width:300px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 405px);overflow:auto;padding:24px;border-color:#d9c19b55;overscroll-behavior:contain;scrollbar-width:thin}
-.building-card h2{font:400 25px/1.2 Georgia,serif;margin:17px 20px 10px 0;overflow-wrap:anywhere}.building-card .close{right:12px;top:9px;width:32px;height:32px}.building-card dl{display:grid;grid-template-columns:95px minmax(0,1fr);gap:12px 10px;font-size:10px;line-height:1.6}.building-card dt,.building-card dd{margin:0;white-space:normal;min-width:0;overflow-wrap:anywhere}.building-card dt{color:#97afaf}.building-card dd{text-align:left;color:#e1e6df}.building-card p{font-size:10px;line-height:1.7;overflow-wrap:anywhere}#building-year{font:400 36px Georgia,serif}#building-layer-value{font-size:11px;color:#e4ccaa}
+.building-card h2{font:400 25px/1.2 Georgia,serif;margin:17px 20px 10px 0;overflow-wrap:anywhere}.building-card .close{right:12px;top:9px;width:32px;height:32px}.building-card p{font-size:10px;line-height:1.7;overflow-wrap:anywhere}
 .lens-prompt{width:100%;border:1px solid #dac6a148;background:#d9c19b12;border-radius:8px;padding:12px;font-size:11px;line-height:1.5;color:#e6d5b9;text-align:left}.lens-prompt:hover{background:#d9c19b24}.lens-prompt+.lens-prompt{margin-top:8px}#cinematic-view[aria-busy=true]{opacity:.8}
 body:has(.building-card:not([hidden])) .era-card{visibility:hidden}
 footer{font-size:7px;left:30px;right:30px;bottom:10px;color:#a5b9b8}footer .text-button{font-size:7px}.timeline{bottom:49px;border-color:var(--glass-border)}
 .vignette{background:linear-gradient(90deg,#14252e90,transparent 35%),linear-gradient(0deg,#11232d88,transparent 25%,transparent 85%,#14252e55)}
 @media(max-width:1100px) and (min-width:701px){header{gap:15px;inset:22px 24px auto}.brand{min-width:190px;font-size:22px}.brand-sub{font-size:6px}.search-wrap{width:420px;max-width:43vw}.intro{left:26px;width:190px}h1{font-size:34px}.intro p{font-size:10px}.explore-panel{left:24px;width:205px;top:330px;padding:14px}.data-layers,body:not([data-layer=age]) .data-layers{width:580px}.building-card{width:270px;right:18px}.era-card{width:155px;right:24px}body[data-layer=age] .data-layers{width:420px}.lens-legend{gap:8px 12px}}
-@media(max-height:800px) and (min-width:701px){.intro{top:115px}h1{font-size:34px}.intro p{font-size:10px}.explore-panel{top:289px;padding:14px}.districts{max-height:88px}.building-card{max-height:calc(100dvh - 365px)}.lens-content{padding:11px 16px}.lens-description,.lens-controls p{margin:7px 0}.map-tools{top:36%}.map-tools button{height:29px}.lens-tabs button{padding:8px}.era-card{top:118px}}
+@media(max-height:800px) and (min-width:701px){.intro{top:115px}h1{font-size:34px}.intro p{font-size:10px}.explore-panel{top:289px;padding:14px}.districts{max-height:88px}.building-card{max-height:calc(100dvh - 365px)}.lens-content{padding:11px 16px}.lens-description,.lens-controls p{margin:7px 0}.map-tools{top:36%}.map-tools button{height:29px}.lens-tabs button{padding:8px}.era-card{top:118px}body.hero-collapsed .explore-panel{top:115px}}
 @media(max-width:700px){
  header{inset:16px 15px auto;gap:15px}.brand{font-size:24px;min-width:0;gap:9px}.brand-mark{font-size:25px;width:34px;height:34px;line-height:32px}.brand-sub{font-size:6px;letter-spacing:1px;margin-top:6px}header>.text-button{font-size:8px;padding:8px 0}.search-wrap{width:100%;max-width:none;padding:15px 12px}.search-wrap input{font-size:11px}.intro{display:none}
  .explore-panel{top:143px;left:14px;right:14px;width:auto;padding:9px 10px}.districts{max-height:none;margin-bottom:5px}.district-button{font-size:9px;padding:6px 8px}.theme-switch{width:145px}.theme-switch button{font-size:9px}.layer-heading{flex:1}#labels-toggle{font-size:9px}
- .data-layers,body:not([data-layer=age]) .data-layers{width:calc(100% - 28px);max-width:none;bottom:46px}.lens-tabs{padding:5px;gap:2px}.lens-tabs button{font-size:9px;padding:9px 3px}.lens-toggle{padding:0 7px;font-size:8px}.lens-guide button{padding:8px 9px}.lens-content{padding:12px}.lens-heading h2{font-size:19px}.lens-legend{gap:7px 11px}.lens-legend>span{font-size:8px}.lens-description,.lens-controls p{font-size:9px}.lens-count{font-size:8px}.lens-controls label{font-size:10px}.lens-controls select{font-size:10px}.noise-mode-row button{font-size:9px;padding:7px 3px}
+ .data-layers,body:not([data-layer=age]) .data-layers{width:calc(100% - 28px);max-width:none;bottom:46px}.lens-tabs{padding:5px;gap:2px}.lens-tabs button{font-size:9px;padding:9px 3px}body .data-layers .lens-dock-action{padding:0 10px 0 10px}body .data-layers .lens-toggle{font-size:9px}.lens-guide button{padding:8px 9px}.lens-content{padding:12px}.lens-heading h2{font-size:19px}.lens-legend{gap:7px 11px}.lens-legend>span{font-size:8px}.lens-description,.lens-controls p{font-size:9px}.lens-count{font-size:8px}.lens-controls label{font-size:10px}.lens-controls select{font-size:10px}.noise-mode-row button{font-size:9px;padding:7px 3px}.lens-mini-legend{padding:7px 12px;gap:8px}.mini-ramp-end{font-size:7px}.mini-swatch{font-size:7px}
  body[data-layer=overview] .lens-description{font-size:9px}body[data-layer=overview] .lens-content{padding:1px 12px 8px}
  body[data-layer=age] .data-layers{top:239px;bottom:auto;width:calc(100% - 28px)}body[data-layer=age] .lens-content{padding:0 10px 7px}.era-card,body[data-layer=age] .era-card{top:340px;left:15px;right:auto;width:132px;padding:10px}.era-year{font-size:39px}.era-card small{font-size:7px}
  .map-tools{top:37%;right:14px;padding:3px}.map-tools button{width:31px;height:30px}.map-tools span{margin:1px 5px}.north{display:none}.map-caption,body:not([data-layer=age]) .map-caption{display:none}.timeline{left:14px;right:14px;bottom:46px;padding:12px}.timeline-main{padding:15px 0}.timeline-top .eyebrow{font-size:6px}
- .building-card{top:143px;left:auto;right:14px;width:calc(100% - 28px);max-width:none;max-height:calc(100dvh - 455px);min-height:170px;padding:19px}.building-card h2{font-size:23px}.building-card dl{font-size:10px;grid-template-columns:100px minmax(0,1fr)}.building-card p{font-size:10px}
+ .building-card{top:143px;left:auto;right:14px;width:calc(100% - 28px);max-width:none;max-height:calc(100dvh - 455px);min-height:170px;padding:19px}.building-card h2{font-size:23px}.building-card p{font-size:10px}
  footer{left:15px;right:15px;bottom:12px;font-size:6px}footer .text-button{font-size:6px}.loading{padding:25px}.loading strong{font:400 30px Georgia,serif}
 }
 @media(max-height:650px) and (max-width:700px){.explore-panel{display:none}body[data-layer=age] .data-layers{top:142px}.era-card,body[data-layer=age] .era-card{display:none}.building-card{top:140px;max-height:calc(100dvh - 340px);min-height:120px}.lens-description{max-height:48px;overflow:auto}.map-tools{top:25%}}
@@ -42,13 +85,46 @@ body[data-layer=age] .north{bottom:250px}
 /* Area context shares the existing lens glass and warm type palette. */
 #use-location{flex:0 0 30px;width:30px;height:30px;border:1px solid #dac7a644;border-radius:7px;background:#e5d9bf0b;color:#d9c19b;font-size:23px;line-height:1;margin:-6px 0;cursor:pointer}
 #use-location:hover,#use-location:focus-visible{background:#e5d9bf24;outline:1px solid #d9c19b}#use-location:disabled{opacity:.5;cursor:wait}
-.context-card{position:fixed;z-index:7;top:108px;right:76px;width:295px;max-width:calc(100vw - 28px);padding:20px;background:var(--glass);border:1px solid #d9c19b55;border-radius:14px;backdrop-filter:blur(22px);box-shadow:0 10px 35px #06131b20}
+.context-card{position:fixed;z-index:7;top:108px;right:76px;width:295px;max-width:calc(100vw - 28px);padding:20px;background:var(--glass);border:1px solid #d9c19b55;border-radius:14px;backdrop-filter:blur(26px);box-shadow:var(--panel-shadow)}
 .context-card h3{font:400 22px/1.25 Georgia,serif;margin:0 12px 12px 0;overflow-wrap:anywhere}.context-card p{font-size:11px;line-height:1.7;color:#becbc6}.context-card strong{font:400 28px/1.3 Georgia,serif;color:#e4ccaa}
 #price-area-card{pointer-events:none}.location-lenses{display:flex;gap:6px}.location-lenses button{flex:1;padding:9px 5px;border:1px solid #dac7a644;border-radius:7px;color:#e4ccaa;background:#e5d9bf0b}
-#building-price-context{margin:20px -4px 12px;padding:15px 12px;border:1px solid #dac7a62b;background:#e5d9bf08;border-radius:10px}
-#building-price-context>h3{font:400 21px Georgia,serif;margin:0 0 14px}.area-metric+.area-metric{margin-top:14px;padding-top:14px;border-top:1px solid #dac7a622}.area-metric h3{font-size:10px;font-weight:400;line-height:1.5;color:#b4c5c1;margin:0 0 7px}.area-metric strong{font:400 23px/1.4 Georgia,serif;color:#e4ccaa}.area-metric p{margin:4px 0!important;font-size:10px!important}.area-disclaimer{color:#aebeb9}#building-price-context>a{font-size:9px;color:#d9c19b;line-height:1.6;display:block}
+/* Compact 2x3 (3x2 when expanded) metric-card grid: every figure visible at
+   once, no scrolling, no per-card expand — every card is the same fixed
+   height (label + one line). Full detail lives in one dialog instead (see
+   .detail-section / #building-detail-dialog below), reached via
+   .record-detail-trigger, so the grid never grows uneven card heights. */
+.record-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:2px 0 12px}
+.record-metric{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid #d9c19b2b;background:#d9c19b09;border-radius:10px}
+.metric-label{font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:#97afaf}
+.metric-value{font:400 15px/1.3 Georgia,serif;color:var(--gold);overflow-wrap:anywhere}
+@media(min-width:1024px){body .building-card.is-expanded .record-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* The one "view more" affordance for the whole grid: styled like a 7th,
+   full-width card so it reads as part of the same group, not a stray CTA
+   competing with the gold primary "View current listings" button above. */
+.record-detail-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:11px 12px;margin:0 0 14px;border:1px solid #d9c19b2b;background:#d9c19b09;border-radius:10px;font-size:11px;color:#e6d5b9;text-align:left}
+.record-detail-trigger:hover,.record-detail-trigger:focus-visible{background:#d9c19b1c}
+.record-detail-trigger span:last-child{color:var(--gold);flex-shrink:0}
+/* Detail dialog: reuses the app's shared native dialog{...} glass styling
+   (style.css) for visual consistency — only layout for its own content
+   (per-metric sections + relocated noise/cinematic prompts) lives here. */
+#building-detail-dialog{max-width:640px;overflow-y:auto}
+#building-detail-dialog .detail-subhead{font-size:11px;color:#aebeb9;margin:-8px 0 22px;overflow-wrap:anywhere}
+.detail-sections{display:flex;flex-direction:column}
+.detail-section{padding:18px 0;border-top:1px solid var(--line)}
+.detail-section:first-child{padding-top:0;border-top:0}
+.detail-section>h3{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:#97afaf;margin:0}
+.detail-value{display:block;font:400 21px/1.3 Georgia,serif;color:var(--gold);margin:5px 0 8px;overflow-wrap:anywhere}
+.detail-value:empty{display:none}
+.detail-body p{margin:6px 0}
+.detail-body h3{font:400 16px Georgia,serif;margin:2px 0 10px;color:#e4ccaa}
+.detail-body strong{font:400 18px/1.4 Georgia,serif;color:#cde1cf}
+.detail-source,.detail-body a{display:inline-block;font-size:9px;color:#d9c19b;text-decoration:underline;text-underline-offset:3px;margin-top:8px}
+.detail-actions{display:flex;flex-direction:column;gap:8px;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.detail-actions:empty{display:none}
+@media(max-width:700px){#building-detail-dialog{padding:24px 20px}.detail-value{font-size:18px}}
+.area-metric+.area-metric{margin-top:14px;padding-top:14px;border-top:1px solid #dac7a622}.area-metric h3{font-size:10px;font-weight:400;line-height:1.5;color:#b4c5c1;margin:0 0 7px}.area-metric strong{font:400 20px/1.4 Georgia,serif;color:#e4ccaa}.area-metric p{margin:4px 0!important;font-size:10px!important;border:0;padding:0}.area-disclaimer{color:#aebeb9;border:0;padding-bottom:0}
 .price-period{color:#e4ccaa}.price-metrics button[aria-pressed=true]{background:var(--gold);color:#21343b}
-.building-card .area-metric p{border:0;padding:0}.building-card .area-disclaimer{border:0;padding-bottom:0}
+.record-status{color:#aebeb9}
 #building-listings{margin:20px 0;padding-top:16px;border-top:1px solid #c8d0c12b}#building-listings h3{font:400 21px Georgia,serif;margin:0 0 10px}#building-listings h4{font-size:11px;color:#d9c19b;margin:14px 0 8px}#building-listings p{border:0;padding:0;margin:8px 0;font-size:10px;color:#afbfbd}#building-listings .listing-status{color:#d8dfd6}#building-listings article{padding:10px 0;border-bottom:1px solid #c8d0c11a}#building-listings article strong{font-size:11px;line-height:1.5;font-weight:500;overflow-wrap:anywhere}#building-listings .listing-snippet{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}#building-listings a{font-size:10px;color:#dfc6a3}#building-listings details{margin:12px 0}#building-listings summary{font-size:11px;cursor:pointer;color:#d6c5a9}.listing-copy{font:inherit;font-size:10px;text-align:left;padding:8px;background:#e5d9bf0b;border:1px solid #dac7a644;border-radius:6px;overflow-wrap:anywhere;max-width:100%;color:#d6c5a9}.listing-manual-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}#building-listings small{display:block;font-size:9px;line-height:1.6;color:#99afaa;margin:12px 0}
 .lens-guide{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:700px){.search-wrap{gap:8px}#use-location{flex-basis:27px;width:27px}.search-wrap kbd{display:none}.context-card{top:143px;right:14px;width:calc(100% - 28px);padding:18px}.lens-tabs button{font-size:8px;padding:9px 2px}.lens-guide{grid-template-columns:repeat(2,minmax(0,1fr))}.lens-guide button:last-child{grid-column:1/-1}.lens-guide button:last-child span{display:inline;margin-left:8px}.lens-guide button:last-child strong{display:inline}}
@@ -61,7 +137,7 @@ body:not([data-layer=age]) .building-card{max-height:min(calc(100dvh - 230px),ca
 /* The selection card keeps identity and actions visible; only its body scrolls. */
 body .building-card{display:flex;flex-direction:column;width:380px;padding:0;overflow:hidden}
 body .building-card.is-expanded{width:min(520px,calc(100vw - 48px))}
-.record-header{position:relative;flex:0 0 auto;padding:20px 20px 0;background:#172d36;border-bottom:1px solid #d9c19b30}
+.record-header{position:relative;flex:0 0 auto;padding:20px 20px 0;background:#0f1830;border-bottom:1px solid #d9c19b30}
 .building-card .record-header h2{font-size:25px;line-height:1.2;margin:0 72px 12px 0;max-height:90px;overflow:auto}
 .record-expand{position:absolute;right:44px;top:9px;width:32px;height:32px;border-radius:8px;font-size:15px;line-height:1;color:#d6c5a9}
 .record-expand:hover,.record-expand:focus-visible{background:#d9c19b18}
@@ -71,6 +147,10 @@ body .building-card.is-expanded{width:min(520px,calc(100vw - 48px))}
 .record-listing-summary[data-state=idle]{background:var(--gold);border-color:transparent;color:#21343b;font-weight:600}
 .record-listing-summary[data-state=idle]:hover,.record-listing-summary[data-state=idle]:focus-visible{background:#e8d2aa}
 .record-listing-summary[data-state=loading]{opacity:.8}
+/* Clearly secondary vs. the gold primary CTA above: outlined, muted, no fill. */
+.record-shortlist{display:block;text-align:center;width:100%;margin-top:8px;padding:9px 12px;border:1px solid #8da7ad4a;background:transparent;border-radius:8px;font:500 11px/1.4 'Segoe UI',sans-serif;color:#b9c8c5}
+.record-shortlist:hover,.record-shortlist:focus-visible{background:#8da7ad16;border-color:#8da7ad80}
+.record-shortlist.is-saved{border-color:#d9c19b70;color:#e8d2aa;background:#d9c19b10}
 .listing-search-action{margin:10px 0 18px}.listing-search-go{display:block;width:100%;padding:13px 16px;border-radius:10px;background:var(--gold);color:#21343b;font:600 14px/1.3 'Segoe UI',sans-serif}
 .listing-search-go:hover,.listing-search-go:focus-visible{background:#e8d2aa}.listing-search-action p{margin:0 0 12px;font-size:11px;line-height:1.5;color:#b4c4c0}
 .record-tabs{display:flex;gap:18px;margin-top:12px}.record-tabs button{padding:11px 0;border-bottom:2px solid transparent;font-size:11px;color:#aebeb9}.record-tabs button[aria-selected=true]{border-color:#e5c89c;color:#f2e1c8}
@@ -80,10 +160,9 @@ body .building-card.is-expanded{width:min(520px,calc(100vw - 48px))}
 #selected-address-marker{position:absolute;z-index:3;top:0;left:0;width:12px;height:12px;margin:-6px 0 0 -6px;pointer-events:none;border:2px solid #ffe7a6;border-radius:50%;box-shadow:0 0 0 5px #ffe7a628,0 0 15px #ffe7a654;background:#ffe7a6}
 @media(max-width:700px){body .building-card,body .building-card.is-expanded{width:calc(100% - 28px)}.record-expand{display:none}.record-header{padding:15px 16px 0}.building-card .record-header h2{font-size:23px;margin:0 36px 10px 0}.record-body{padding:15px 16px 20px}.record-tabs button{padding:10px 0}.record-listing-summary{padding:9px 10px}#weather-hud{order:1;font-size:9px;padding:8px 10px;margin-left:0}}
 @media(max-width:700px){body .building-card,body:not([data-layer=age]) .building-card{top:auto;bottom:calc(100dvh - var(--lens-top,100dvh) + 12px);max-height:min(52dvh,calc(var(--lens-top,100dvh) - 155px));border-radius:18px}body:has(.building-card:not([hidden])) .explore-panel{visibility:hidden}}
-.record-provenance{border-top:1px solid #c8d0c12b;margin:16px 0;padding-top:14px}.record-provenance summary{font-size:11px;color:#b9c6bf;cursor:pointer}.record-provenance dl{margin-top:15px}.record-provenance p{color:#aebeb9}.record-body>dl{margin-bottom:12px}
 @media(max-height:500px) and (max-width:700px){body .building-card,body:not([data-layer=age]) .building-card{top:12px;bottom:12px;width:min(350px,calc(100vw - 28px));max-height:calc(100dvh - 24px)}}
 
-#building-parking-context{border-top:1px solid var(--line, #ffffff20);margin-top:16px;padding-top:16px}#building-parking-context h3{font-size:13px}#building-parking-context p{font-size:11px;line-height:1.6}#building-parking-context strong{font-size:15px;color:#cde1cf}.parking-breakdown{display:grid;grid-template-columns:1fr auto;gap:5px;font-size:11px}.parking-breakdown dd{margin:0}
+.parking-breakdown{display:grid;grid-template-columns:1fr auto;gap:5px;font-size:11px}.parking-breakdown dd{margin:0}
 .parking-actions{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-top:10px}
 .parking-map-link{display:inline;width:auto;margin:0;padding:0;border:0;border-radius:0;background:none;font-size:11px;color:#e2c7a3;text-decoration:underline;text-underline-offset:3px}
 .parking-map-link:hover{color:#f4e4c4;background:none}

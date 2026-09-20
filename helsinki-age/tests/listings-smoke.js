@@ -13,7 +13,7 @@ try{
  });
  await page.goto('http://localhost:5173/');await page.waitForFunction(()=>window.__atlas,null,{timeout:90000});assert.equal(requests,0,'no listing lookup on map load');
  const records=await page.evaluate(()=>__atlas.manifest.filter(b=>b.address).slice(0,3));
- await page.evaluate(r=>__atlas.showBuilding(r),records[0]);assert.equal(await page.locator('#building-price-context').isVisible(),true);
+ await page.evaluate(r=>__atlas.showBuilding(r),records[0]);assert.equal(await page.locator('[data-metric=price] .metric-value').isVisible(),true);
  assert.equal(requests,0,'opening a record does not search');
  assert.equal(await page.locator('.record-listing-summary').getAttribute('data-state'),'idle');
  await page.locator('.record-listing-summary').click();

@@ -1,13 +1,20 @@
 import * as C from 'cesium';
 const rank={district:4,water:3,place:1,street:0};
+// A manual toggle wins for the rest of the tab session; otherwise default by
+// local hour, since dusk styling reads worse against a bright midday sky.
+function initialTheme(){
+ try{const stored=sessionStorage.getItem('lens-theme');if(stored==='day'||stored==='dusk')return stored;}catch{/* private mode */}
+ const hour=new Date().getHours();
+ return hour>=7&&hour<18?'day':'dusk';
+}
 export class MapContext {
  constructor(viewer,data){
-  this.viewer=viewer;this.data=data;this.enabled=true;this.theme='dusk';this.elements=[];this.container=document.querySelector('#map-labels');
+  this.viewer=viewer;this.data=data;this.enabled=true;this.theme=initialTheme();this.elements=[];this.container=document.querySelector('#map-labels');
   // The prepared basemap is the only honest ground. Outside it the ellipsoid
   // shows tessellation/shadow cascade strips, which got worse as the tileset AABB grew.
   viewer.scene.globe.cartographicLimitRectangle=C.Rectangle.fromDegrees(...data.rectangle);
   this.config=fetch('/api/foundation/config').then(r=>r.ok?r.json():{}).catch(()=>({}));
-  this.ready=this.setTheme('dusk');
+  this.ready=this.setTheme(this.theme);
   this.labels=data.labels.map(label=>({...label,world:C.Cartesian3.fromDegrees(...label.position,3)})).sort((a,b)=>(rank[b.type]+(b.major?2:0))-(rank[a.type]+(a.major?2:0)));
   let previous=0;viewer.scene.postRender.addEventListener(()=>{const now=performance.now();if(now-previous<100)return;previous=now;this.layout();});
  }

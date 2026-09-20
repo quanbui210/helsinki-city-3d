@@ -5,6 +5,10 @@ export class ParkingAreas {
     this.ready=Promise.resolve();
   }
   set(active){this.active=active;}
+  summary(position){
+    const spots=this.lookup(position).nearbyParkingSpots;
+    return spots?`≈ ${spots} spaces within 200 m`:'No mapped data nearby';
+  }
   buildingContext(container,position,onOpen){
     container.replaceChildren();const result=this.lookup(position);
     const add=(tag,text,className)=>{const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;container.append(el);return el;};

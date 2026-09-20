@@ -30,7 +30,9 @@ try{
     assert.ok(result.checked>100);assert.equal(result.bad,0);console.log(layer,result,'switch ms',Date.now()-start);
     await page.screenshot({path:`artifacts/layers/${layer}.png`});
   }
-  await page.locator('button[data-layer="noise"]').click();
+  // The drawer no longer auto-expands on tab selection; open it explicitly
+  // to reach the transport-source controls it contains.
+  await page.locator('button[data-layer="noise"]').click();await page.locator('.lens-toggle').click();
   for(const mode of ['road','rail','metro','tram','combined']){
     await page.locator(`[data-noise-mode="${mode}"]`).click();
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

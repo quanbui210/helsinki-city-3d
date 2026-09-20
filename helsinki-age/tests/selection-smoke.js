@@ -19,8 +19,11 @@ try{
    const h=await page.locator('.record-header').boundingBox(),c=await page.locator('#building-card').boundingBox();assert.ok(h.y>=c.y&&h.y+h.height<=c.y+c.height);
    assert.equal(await page.locator('#building-card').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
  };
- await visibleHeader();await page.locator('#building-prompt').scrollIntoViewIfNeeded();await visibleHeader();
- await page.locator('.record-listing-summary').click();assert.equal(await page.locator('#building-listings').isVisible(),true);assert.equal(await page.locator('#building-year').isVisible(),false);
+ // #building-prompt now lives in the "Full details" dialog, not the
+ // scrollable context tab; scroll to its trigger there instead to exercise
+ // the same sticky-header-while-scrolling check.
+ await visibleHeader();await page.locator('#open-building-detail').scrollIntoViewIfNeeded();await visibleHeader();
+ await page.locator('.record-listing-summary').click();assert.equal(await page.locator('#building-listings').isVisible(),true);assert.equal(await page.locator('.record-metrics').isVisible(),false);
  assert.equal(await page.evaluate(()=>__atlas.buildingSelection.stage.enabled),true);
  assert.equal(await page.evaluate(()=>__atlas.buildingSelection.edge.selected.length),1);
  assert.equal(await page.locator('#selected-address-marker').isVisible(),true);
@@ -30,8 +33,11 @@ try{
  await page.locator('[data-layer=noise]').click();assert.equal(await page.locator('#building-listings').isVisible(),true);await page.waitForTimeout(400);assert.equal(calls,1);
  await page.locator('#record-tab-listings').focus();await page.keyboard.press('ArrowLeft');assert.equal(await page.locator('#record-tab-context').getAttribute('aria-selected'),'true');
  await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>!__atlas.layerSwitcher.open);await visibleHeader();
- await page.locator('#building-prompt').scrollIntoViewIfNeeded();await visibleHeader();await page.locator('.record-listing-summary').click();await page.screenshot({path:'artifacts/selection/listings-mobile.png'});
- await page.locator('#close-building').click();assert.equal(await page.locator('#selected-address-marker').isVisible(),false);assert.equal(await page.evaluate(()=>__atlas.buildingSelection.features.size),0);assert.equal(await page.evaluate(()=>__atlas.layerSwitcher.open),true);
+ await page.locator('#open-building-detail').scrollIntoViewIfNeeded();await visibleHeader();await page.locator('.record-listing-summary').click();await page.screenshot({path:'artifacts/selection/listings-mobile.png'});
+ // The layer drawer auto-collapses whenever a building panel opens (dock
+ // density pass); it stays collapsed here since that's the state that was
+ // captured and restored around the mobile compacting above.
+ await page.locator('#close-building').click();assert.equal(await page.locator('#selected-address-marker').isVisible(),false);assert.equal(await page.evaluate(()=>__atlas.buildingSelection.features.size),0);assert.equal(await page.evaluate(()=>__atlas.layerSwitcher.open),false);
  await page.evaluate(()=>__atlas.showBuilding({address:'Example 1',position:[24.95,60.17]}));await page.locator('#selected-address-marker').waitFor({state:'visible'});assert.equal(await page.evaluate(()=>__atlas.buildingSelection.features.size),0);assert.equal(await page.locator('#selected-address-marker').isVisible(),true);assert.equal(await page.locator('#selected-address-marker').textContent(),'');
  assert.deepEqual(errors,[]);console.log('PASS: pinned result summary, accessible tabs, stable header while scrolling, streamed building outline, layer retention, mobile focus and address-point fallback.');
 }finally{await browser.close();}

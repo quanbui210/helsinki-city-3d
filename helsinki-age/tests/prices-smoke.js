@@ -24,6 +24,9 @@ try{
   assert.equal(await page.evaluate(()=>__atlas.nav.state.lon),24.953);
   await page.locator('#location-card button').filter({hasText:'Price'}).click();
   assert.equal(await page.evaluate(()=>__atlas.layerManager.activeId),'price');
+  // The drawer no longer auto-expands on selection; open it explicitly to
+  // reach the sale/rent metric toggle and period caption it contains.
+  await page.locator('.lens-toggle').click();
   const state=await page.evaluate(()=>({...__atlas.nav.state}));
   assert.deepEqual(await page.evaluate(()=>({sale:__atlas.priceAreas.sources.sale.show,rent:__atlas.priceAreas.sources.rent.show,neutral:__atlas.tileset.style===undefined,groundOnly:Object.values(__atlas.priceAreas.sources).every(s=>s.entities.values.filter(e=>e.polygon).every(e=>e.polygon.classificationType.getValue()===0&&e.priceArea))})),{sale:true,rent:false,neutral:true,groundOnly:true});
   assert.match(await page.locator('.price-period').textContent(),/Q1 2026/);
@@ -46,19 +49,33 @@ try{
   const building=await page.evaluate(()=>__atlas.manifest.find(b=>b.address&&__atlas.priceAreas.lookup.sale(b.position)?.avgSalePricePerSqm&&__atlas.priceAreas.lookup.rent(b.position)?.avgRentPerSqm));
   await page.locator('[data-layer=overview]').click();await page.locator('#map-search').fill(building.address);await page.locator('#search-results button').first().click();
   assert.equal(await page.locator('#building-address').textContent(),building.address);
-  assert.match(await page.locator('#building-layer-value').textContent(),/Modeled noise/);
-  assert.match(await page.locator('#building-purpose').textContent(),/\S/);
-  assert.match(await page.locator('#building-price-context').textContent(),/Sale price.*Monthly rent.*not a valuation/s);
+  assert.match(await page.locator('[data-metric=use] .metric-value').textContent(),/\S/);
+  // Per-card expand/collapse is gone; noise methodology and the full
+  // price/rent trend breakdown now live in the "Full details" dialog.
+  await page.locator('#open-building-detail').click();
+  assert.match(await page.locator('[data-detail=noise] .detail-body').textContent(),/Modeled noise/);
+  assert.match(await page.locator('[data-detail=price] .detail-body').textContent(),/Sale price.*Monthly rent.*not a valuation/s);
+  await page.locator('#close-building-detail').click();
   assert.equal(await page.evaluate(()=>Object.values(__atlas.priceAreas.sources).every(s=>!s.show)),true);
   for(const id of ['age','noise','use','price']){
-    await page.locator(`[data-layer=${id}]`).click();assert.equal(await page.locator('#building-price-context').isVisible(),true);assert.equal(await page.locator('#building-address').textContent(),building.address);
+    await page.locator(`[data-layer=${id}]`).click();assert.equal(await page.locator('.record-metrics').isVisible(),true);assert.equal(await page.locator('#building-address').textContent(),building.address);
   }
   await page.screenshot({path:'artifacts/prices/building-desktop.png'});
-  await page.setViewportSize({width:390,height:844});
+  // setViewportSize resolves before the page's own 'resize' listener (which
+  // recomputes --lens-top for the new width) has actually run, so give it a
+  // frame to settle before measuring bounds.
+  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   const bounds=await page.locator('#building-card').boundingBox();assert.ok(bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.width<=390&&bounds.y+bounds.height<=844);
   assert.equal(await page.locator('#building-card').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
-  await page.locator('.area-rent').scrollIntoViewIfNeeded();await page.screenshot({path:'artifacts/prices/building-mobile.png'});
-  await page.locator('#close-building').click();await page.locator('[data-price-metric=rent]').click();await page.screenshot({path:'artifacts/prices/rent-mobile.png'});
+  // Full price/rent breakdown lives in the detail dialog now; open it here
+  // to also confirm the dialog itself is laid out sanely at mobile width.
+  await page.locator('#open-building-detail').click();
+  await page.locator('[data-detail=price] .area-rent').scrollIntoViewIfNeeded();await page.screenshot({path:'artifacts/prices/building-mobile.png'});
+  await page.locator('#close-building-detail').click();
+  // Closing the building leaves the price drawer collapsed (it was force-
+  // collapsed while the building panel was open); reopen it to reach the
+  // rent/sale toggle.
+  await page.locator('#close-building').click();await page.locator('.lens-toggle').click();await page.locator('[data-price-metric=rent]').click();await page.screenshot({path:'artifacts/prices/rent-mobile.png'});
   const ground=await page.evaluate(()=>{const scene=__atlas.viewer.scene;for(let y=245;y<470;y+=12)for(let x=20;x<330;x+=12)if(scene.pick({x,y})?.id?.priceArea)return {x,y};return null;});
   assert.ok(ground,'mobile ground polygons must be pickable');await page.touchscreen.tap(ground.x,ground.y);await page.waitForSelector('#price-area-card:not([hidden])');
   await page.waitForTimeout(300);assert.equal(await page.locator('#price-area-card').isVisible(),true,'tap detail stays visible after touch ends');
