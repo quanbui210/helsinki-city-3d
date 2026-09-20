@@ -52,7 +52,7 @@ const locationCard=document.createElement('aside');locationCard.id='location-car
 const areaCard=document.createElement('aside');areaCard.id='price-area-card';areaCard.className='context-card';areaCard.hidden=true;areaCard.setAttribute('aria-label','Postal area prices');$('#app').append(areaCard);
 const priceContext=document.createElement('section');priceContext.id='building-price-context';$('#building-status').before(priceContext);
 const listingContext=document.createElement('section');listingContext.id='building-listings';$('#building-status').after(listingContext);const parkingContext=document.createElement('section');parkingContext.id='building-parking-context';priceContext.after(parkingContext);
-const buildingPanel=new BuildingPanel($('#building-card'));const listingSearch=new ListingSearch(listingContext,(state,count)=>buildingPanel.status(state,count));
+const buildingPanel=new BuildingPanel($('#building-card'));const listingSearch=new ListingSearch(listingContext,(state,count)=>buildingPanel.status(state,count));buildingPanel.requestSearch=()=>listingSearch.search();
 let buildingSelection,mobileDrawerWasOpen;
 function compactForSelection(){if(selectionRecord&&innerWidth<=700&&mobileDrawerWasOpen===undefined&&layerSwitcher){mobileDrawerWasOpen=layerSwitcher.open;layerSwitcher.open=false;layerSwitcher.syncOpen();}}
 window.addEventListener('resize',()=>{compactForSelection();if(selectionRecord)buildingSelection?.revealOnMobile(nav,$('#building-card'));});
@@ -142,7 +142,7 @@ async function init(){
  setupLocation({button:locationButton,card:locationCard,onLocate:position=>navigate(position,1500),onExplore:switchLayer});locationButton.disabled=false;
  await Promise.all([priceAreas.ready,parkingAreas.ready,layerManager.ready]);
  await Promise.all([mapContext.ready,new Promise((resolve,reject)=>{let stop;const timeout=setTimeout(()=>{stop?.();reject(Error('City tiles did not finish loading. Please reload.'));},60000);stop=viewer.scene.postRender.addEventListener(()=>{if(loadedContents.size&&tileset.tilesLoaded){stop();clearTimeout(timeout);resolve();}});})]);
- $('#loading').remove();nav.orbit=layerManager.activeId==='overview'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;window.__atlas={viewer,tileset,manifest,slider,nav,mapContext,loadedContents,layerManager,layerSwitcher,switchLayer,appearance,showBuilding,selectSearchResult,priceAreas,parkingAreas,buildingSelection,buildingPanel};
+ $('#loading').remove();nav.orbit=layerManager.activeId==='overview'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;window.__atlas={viewer,tileset,manifest,slider,nav,mapContext,loadedContents,layerManager,layerSwitcher,switchLayer,appearance,showBuilding,selectSearchResult,priceAreas,parkingAreas,buildingSelection,buildingPanel,listingSearch};
 }
 $('#home').onclick=()=>nav?.reset();$('#zoom-in').onclick=()=>nav?.zoom(.78);$('#zoom-out').onclick=()=>nav?.zoom(1.28);$('#rotate-left').onclick=()=>nav?.rotate(-25);$('#rotate-right').onclick=()=>nav?.rotate(25);$('#north').onclick=()=>nav&&nav.rotate(-nav.state.heading);$('#perspective').onclick=()=>nav?.togglePerspective();$('#orbit').onclick=()=>{if(nav){nav.orbit=!nav.orbit;nav.apply();}};
 $('#labels-toggle').onclick=()=>{if(mapContext){mapContext.enabled=!mapContext.enabled;$('#labels-toggle').setAttribute('aria-pressed',String(mapContext.enabled));$('#labels-toggle span').textContent=mapContext.enabled?'ON':'OFF';mapContext.layout();}};

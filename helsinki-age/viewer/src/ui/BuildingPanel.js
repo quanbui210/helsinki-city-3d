@@ -14,7 +14,9 @@ export class BuildingPanel {
     header.append(this.expand);
     let wide=false;try{wide=sessionStorage.getItem('lens-record-wide')==='1';}catch{/* private mode */}
     this.syncExpand(wide);
-    this.summary=document.createElement('button');this.summary.className='record-listing-summary';this.summary.type='button';this.summary.setAttribute('aria-live','polite');this.summary.onclick=()=>this.select('listings');header.append(this.summary);
+    this.summary=document.createElement('button');this.summary.className='record-listing-summary';this.summary.type='button';this.summary.setAttribute('aria-live','polite');
+    this.summary.onclick=()=>{this.select('listings');if(this.summary.dataset.state==='idle')this.requestSearch?.();};
+    header.append(this.summary);
     const tabs=document.createElement('div');tabs.className='record-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Building information');
     this.buttons={};this.panels={};
     for(const [id,label] of [['context','Building & area'],['listings','Listings']]){
@@ -24,7 +26,7 @@ export class BuildingPanel {
     }
     header.append(tabs);
     for(const child of [...card.children])if(child.id==='building-listings')this.panels.listings.append(child);else this.panels.context.append(child);
-    card.replaceChildren(header,this.panels.context,this.panels.listings);this.select('context');this.status('loading');
+    card.replaceChildren(header,this.panels.context,this.panels.listings);this.select('context');this.status('idle');
   }
   syncExpand(wide){
     this.card.classList.toggle('is-expanded',wide);
@@ -38,7 +40,7 @@ export class BuildingPanel {
   open(record){const key=record.buildingId??record.address;if(this.key!==key){this.key=key;this.select('context');for(const panel of Object.values(this.panels))panel.scrollTop=0;}}
   status(state,count=0){
     this.summary.dataset.state=state;
-    this.summary.textContent=state==='loading'?'Checking listing sites…':state==='found'?`${count} search ${count===1?'match':'matches'} · View results →`:state==='empty'?'No indexed matches · Search manually →':'Listing search unavailable · Options →';
+    this.summary.textContent=state==='idle'?'View current listings →':state==='loading'?'Looking up…':state==='found'?`${count} listing${count===1?'':'s'} found →`:state==='empty'?'None found →':'Could not check listings →';
     this.buttons.listings.textContent=state==='found'?`Listings (${count})`:'Listings';
   }
 }

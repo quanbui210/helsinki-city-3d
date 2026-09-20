@@ -10,9 +10,10 @@ try{
  const record=await page.evaluate(()=>__atlas.manifest.filter(r=>r.address).sort((a,b)=>Math.hypot(a.position[0]-24.95,a.position[1]-60.17)-Math.hypot(b.position[0]-24.95,b.position[1]-60.17))[0]);
  await page.evaluate(r=>__atlas.selectSearchResult({buildingId:r.buildingId,position:r.position,range:650}),record);
  await page.waitForFunction(()=>!__atlas.nav.flight&&__atlas.buildingSelection.features.size>0);
+ await page.locator('.record-listing-summary').click();
  await page.waitForFunction(()=>document.querySelector('.record-listing-summary').dataset.state==='found');
  assert.equal(await page.locator('#record-panel-context').isVisible(),true);
- assert.match(await page.locator('.record-listing-summary').textContent(),/1 search match/);
+ assert.match(await page.locator('.record-listing-summary').textContent(),/1 listing found/);
  const visibleHeader=async()=>{
    const h=await page.locator('.record-header').boundingBox(),c=await page.locator('#building-card').boundingBox();assert.ok(h.y>=c.y&&h.y+h.height<=c.y+c.height);
    assert.equal(await page.locator('#building-card').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
