@@ -25,6 +25,14 @@ export class MapContext {
   this.theme=theme;
   const water=theme==='day'?'#89b6bc':'#102e3c';
   const aerial=Boolean((await this.config).aerial);
+  if(this.theme!==theme)return;
+  if(aerial&&this.aerial&&this.layer){
+   // Floor view temporarily uses daylight; retain downloaded imagery tiles.
+   this.layer.brightness=theme==='day'?1:.72;this.layer.saturation=theme==='day'?.9:.65;
+   this.viewer.scene.globe.baseColor=C.Color.fromCssColorString(water);
+   this.viewer.scene.backgroundColor=C.Color.fromCssColorString(water);
+   document.body.dataset.theme=theme;return;
+  }
   // Vercel catch-all does not see /aerial/{z}/{x}/{y} (platform 404). Query hits /api/foundation/aerial.
   const provider=aerial?new C.UrlTemplateImageryProvider({url:'/api/foundation/aerial?z={z}&x={x}&y={y}',maximumLevel:18,rectangle:C.Rectangle.fromDegrees(24.6,60.09,25.27,60.32),credit:'Orthophotos © National Land Survey of Finland · CC BY 4.0'}):await this.preparedMap(theme);
   if(this.theme!==theme)return;

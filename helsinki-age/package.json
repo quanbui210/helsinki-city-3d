@@ -10,7 +10,7 @@
     "data:fetch": "node data-pipeline/fetch-wfs-buildings.js",
     "data:join": "node data-pipeline/join-manifest.js",
     "data:convert": "node data-pipeline/convert-citygml-to-3dtiles.js",
-    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build && npm run data:layers && npm run data:energy && npm run data:addresses && npm run data:prices && npm run data:parking && npm run data:trees",
+    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build && npm run data:layers && npm run data:energy && npm run data:addresses && npm run data:prices && npm run data:parking && npm run data:trees && npm run data:floors",
     "test": "node --test data-pipeline/*.test.js",
     "test:browser": "node tests/smoke.js",
     "data:map:fetch": "node data-pipeline/fetch-map-context.js",
@@ -34,7 +34,9 @@
     "test:parking:tiers": "node tests/parking-tiers-smoke.js",
     "test:cinematic": "node tests/cinematic-smoke.js",
     "test:weather": "node --test tests/weather-parse.test.js && node tests/weather-smoke.js",
-    "data:trees": "node data-pipeline/fetch-trees.js"
+    "data:trees": "node data-pipeline/fetch-trees.js",
+    "data:floors": "node data-pipeline/enrich-floors.js",
+    "test:step-inside": "node --test data-pipeline/sightline.test.js && node tests/step-inside-smoke.js"
   },
   "dependencies": {
     "@turf/bbox": "^7.4.0",
@@ -43,7 +45,8 @@
     "cesium": "^1.145.0",
     "earcut": "^3.2.3",
     "polygon-clipping": "^0.15.7",
-    "proj4": "^2.22.0"
+    "proj4": "^2.22.0",
+    "suncalc": "^1.9.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.0",

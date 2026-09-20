@@ -21,6 +21,10 @@ export class BuildingPanel {
     header.append(this.summary);
     this.shortlist=document.createElement('button');this.shortlist.className='record-shortlist';this.shortlist.type='button';
     this.shortlist.onclick=()=>{const saved=!isShortlisted(this.key);setShortlisted(this.key,saved);this.syncShortlist(saved);};
+    // Ships later with a list/compare view. Persistence stays in shortlist.js —
+    // hide the control so localStorage-only save is not a dead-end in the panel.
+    // Restore: remove hidden=true (keep the append). Do not hide #step-inside-button.
+    this.shortlist.hidden=true;
     header.append(this.shortlist);
     const tabs=document.createElement('div');tabs.className='record-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Building information');
     this.buttons={};this.panels={};

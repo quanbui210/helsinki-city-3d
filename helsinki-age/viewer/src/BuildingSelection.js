@@ -25,7 +25,7 @@ export class BuildingSelection {
   revealOnMobile(nav,card){
     cancelAnimationFrame(this.revealFrame);
     const reveal=()=>{
-      if(!this.record?.position||innerWidth>700)return;
+      if(document.body.classList.contains('step-inside-active')||!this.record?.position||innerWidth>700)return;
       if(nav.flight){this.revealFrame=requestAnimationFrame(reveal);return;}
       const p=C.SceneTransforms.worldToWindowCoordinates(this.viewer.scene,C.Cartesian3.fromDegrees(...this.record.position.slice(0,2),2));
       const bottom=card.getBoundingClientRect().top;

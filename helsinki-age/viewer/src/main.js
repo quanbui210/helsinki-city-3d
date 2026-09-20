@@ -1,3 +1,4 @@
+import {StepInside} from './StepInside.js';
 import {loadRealityMesh,loadDistantContext} from './RealityMesh.js';
 import {StreetTrees} from './StreetTrees.js';
 import {ParkingAreas} from './ParkingAreas.js';
@@ -57,10 +58,11 @@ const areaCard=document.createElement('aside');areaCard.id='price-area-card';are
 const listingContext=document.createElement('section');listingContext.id='building-listings';$('#building-status').after(listingContext);
 const buildingPanel=new BuildingPanel($('#building-card'));const listingSearch=new ListingSearch(listingContext,(state,count)=>buildingPanel.status(state,count));buildingPanel.requestSearch=()=>listingSearch.search();
 const cinematic=new CinematicView();
-let weather;
+let weather,stepInside;
+const stepButton=document.createElement('button');stepButton.id='step-inside-button';stepButton.type='button';stepButton.className='record-shortlist';stepButton.textContent='Step inside →';stepButton.hidden=true;document.querySelector('.record-tabs').before(stepButton);stepButton.onclick=()=>{if(selectionRecord){buildingPanel.closeDetail();stepInside?.enter(selectionRecord,stepButton);}};
 let buildingSelection,mobileDrawerWasOpen;
 function compactForSelection(){if(selectionRecord&&innerWidth<=700&&mobileDrawerWasOpen===undefined&&layerSwitcher){mobileDrawerWasOpen=layerSwitcher.open;layerSwitcher.open=false;layerSwitcher.syncOpen();}}
-window.addEventListener('resize',()=>{compactForSelection();if(selectionRecord)buildingSelection?.revealOnMobile(nav,$('#building-card'));});
+window.addEventListener('resize',()=>{if(stepInside?.active)return;compactForSelection();if(selectionRecord)buildingSelection?.revealOnMobile(nav,$('#building-card'));});
 const fitRecordCard=()=>document.documentElement.style.setProperty('--lens-top',`${$('#data-layers').getBoundingClientRect().top}px`);
 new ResizeObserver(fitRecordCard).observe($('#data-layers'));window.addEventListener('resize',fitRecordCard);
 let areaPinned=false;
@@ -112,7 +114,7 @@ function showBuilding(record,feature){
  $('#building-status').textContent=record.buildingId?`Geometry: ${record.geometrySource==='espoo-wfs'?'official Espoo CityGML':record.geometrySource==='citydb-wfs'?'official Helsinki city information model':'2019 snapshot'}. Register and modeled noise are context for a viewing, not a current building inspection.`:'Official Helsinki address point. No 3D building record is matched at this address; no age, noise or energy value is inferred.';
  const [west,south,east,north]=mapContext.data.rectangle;
  if(record.position&&(record.position[0]<west||record.position[0]>east||record.position[1]<south||record.position[1]>north))$('#building-status').textContent+=' This address is outside the prepared reference map; the blank background does not describe its actual surroundings.';
- $('#building-prompt').hidden=!record.buildingId;$('#cinematic-view').hidden=!record.position;cinematic.resetButton();
+ stepButton.hidden=!record.buildingId;$('#building-prompt').hidden=!record.buildingId;$('#cinematic-view').hidden=!record.position;cinematic.resetButton();
 }
 function featureFor(record){for(const content of loadedContents.values())for(let i=0;i<content.featuresLength;i++){const f=content.getFeature(i);if(f.getProperty('buildingId')===record.buildingId)return f;}}
 function selectSearchResult(item){
@@ -175,7 +177,7 @@ async function init(){
  new AddressSearch({input:$('#map-search'),results:$('#search-results'),manifest,context,onSelect:selectSearchResult,onFocus:()=>{nav.orbit=false;}});
  $('#map-search').addEventListener('input',collapseHero);
  const showArea=entity=>{priceAreas.describe(areaCard,entity.priceArea,entity.priceMetric);const note=document.createElement('p');note.textContent='Postal-area average, not an individual building value. Mix of homes can affect quarterly changes.';areaCard.append(note);areaCard.hidden=false;};
- const handler=new C.ScreenSpaceEventHandler(viewer.scene.canvas);handler.setInputAction(e=>{if(nav.dragged)return;areaPinned=false;const feature=viewer.scene.pick(e.position);if(feature instanceof C.Cesium3DTileFeature){const record=layerManager.records.get(feature.getProperty('buildingId'));if(record)showBuilding(record,feature);else{closeSelection();toast('Surrounding city context · no linked building record');}}else{closeSelection();if(layerManager.activeId==='price'&&feature?.id?.priceArea){showArea(feature.id);areaPinned=true;}else areaCard.hidden=true;}},C.ScreenSpaceEventType.LEFT_CLICK);
+ const handler=new C.ScreenSpaceEventHandler(viewer.scene.canvas);handler.setInputAction(e=>{if(nav.dragged||stepInside?.active)return;areaPinned=false;const feature=viewer.scene.pick(e.position);if(feature instanceof C.Cesium3DTileFeature){const record=layerManager.records.get(feature.getProperty('buildingId'));if(record)showBuilding(record,feature);else{closeSelection();toast('Surrounding city context · no linked building record');}}else{closeSelection();if(layerManager.activeId==='price'&&feature?.id?.priceArea){showArea(feature.id);areaPinned=true;}else areaCard.hidden=true;}},C.ScreenSpaceEventType.LEFT_CLICK);
  let lastHover=0;handler.setInputAction(e=>{if(layerManager.activeId!=='price'||areaPinned||selectionRecord||nav.pointers.size||performance.now()-lastHover<100)return;lastHover=performance.now();const entity=viewer.scene.pick(e.endPosition)?.id;if(entity?.priceArea)showArea(entity);else areaCard.hidden=true;},C.ScreenSpaceEventType.MOUSE_MOVE);
  viewer.scene.canvas.addEventListener('pointerleave',()=>{if(!areaPinned)areaCard.hidden=true;});
  setupLocation({button:locationButton,card:locationCard,onLocate:position=>navigate(position,1500),onExplore:switchLayer});locationButton.disabled=false;
@@ -184,7 +186,8 @@ async function init(){
  document.querySelectorAll('.theme-switch button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===mapContext.theme)));
  $('#loading').remove();nav.orbit=layerManager.activeId==='overview'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
  weather=new LiveWeather(viewer,$('#weather-hud'));weather.start();
- window.__atlas={viewer,tileset,manifest,slider,nav,mapContext,loadedContents,layerManager,layerSwitcher,switchLayer,appearance,showBuilding,selectSearchResult,priceAreas,parkingAreas,buildingSelection,buildingPanel,listingSearch,cinematic,weather,streetTrees,realityMesh,distantContext};
+ stepInside=new StepInside({viewer,nav,mapContext,layerManager,switchLayer,cinematic,tileset});
+ window.__atlas={stepInside,viewer,tileset,manifest,slider,nav,mapContext,loadedContents,layerManager,layerSwitcher,switchLayer,appearance,showBuilding,selectSearchResult,priceAreas,parkingAreas,buildingSelection,buildingPanel,listingSearch,cinematic,weather,streetTrees,realityMesh,distantContext};
 }
 $('#home').onclick=()=>nav?.reset();$('#zoom-in').onclick=()=>{collapseHero();nav?.zoom(.78);};$('#zoom-out').onclick=()=>{collapseHero();nav?.zoom(1.28);};$('#rotate-left').onclick=()=>nav?.rotate(-25);$('#rotate-right').onclick=()=>nav?.rotate(25);$('#north').onclick=()=>nav&&nav.rotate(-nav.state.heading);$('#perspective').onclick=()=>nav?.togglePerspective();$('#orbit').onclick=()=>{if(nav){nav.orbit=!nav.orbit;nav.apply();}};
 $('#labels-toggle').onclick=()=>{if(mapContext){mapContext.enabled=!mapContext.enabled;$('#labels-toggle').setAttribute('aria-pressed',String(mapContext.enabled));$('#labels-toggle span').textContent=mapContext.enabled?'ON':'OFF';mapContext.layout();}};
@@ -193,7 +196,7 @@ $('#building-prompt').onclick=()=>switchLayer('noise');
 $('#cinematic-view').onclick=()=>{if(selectionRecord&&nav&&viewer){buildingPanel.closeDetail();cinematic.start({viewer,nav,record:selectionRecord,button:$('#cinematic-view')});}};
 $('#close-building').onclick=closeSelection;for(const id of ['about','sources'])$(`#${id}`).onclick=()=>$('#about-dialog').showModal();$('#close-about').onclick=()=>$('#about-dialog').close();$('#about-dialog').addEventListener('click',e=>{if(e.target===$('#about-dialog'))$('#about-dialog').close();});
 $('#share').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);toast('Link copied — this year is ready to share.');}catch{toast('Copy the URL in your address bar to share this year.');}};
-document.addEventListener('keydown',e=>{const editing=['INPUT','SELECT','BUTTON','A'].includes(document.activeElement.tagName);if(e.key==='/'&&!editing){e.preventDefault();$('#map-search').focus();}if(e.code==='Space'&&!editing&&!$('#about-dialog').open&&slider&&layerManager.activeId==='age'){e.preventDefault();slider.playing?slider.pause():slider.start();}
+document.addEventListener('keydown',e=>{if(stepInside?.active)return;const editing=['INPUT','SELECT','BUTTON','A'].includes(document.activeElement.tagName);if(e.key==='/'&&!editing){e.preventDefault();$('#map-search').focus();}if(e.code==='Space'&&!editing&&!$('#about-dialog').open&&slider&&layerManager.activeId==='age'){e.preventDefault();slider.playing?slider.pause():slider.start();}
  // The detail dialog closes itself natively on Escape; skip the panel's
  // own Escape-driven close so dismissing the dialog never also drops the
  // whole building selection underneath it.

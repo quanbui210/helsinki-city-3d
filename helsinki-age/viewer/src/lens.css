@@ -171,3 +171,28 @@ body .building-card.is-expanded{width:min(520px,calc(100vw - 48px))}
 .tiered-clusters{position:absolute;inset:0;pointer-events:none;z-index:2}.tiered-cluster{position:absolute;transform:translate(-50%,-50%);min-width:34px;height:34px;padding:0 7px;border-radius:50%;border:2px solid #b9eee6;background:#256d75;color:#fff;font:600 12px system-ui;box-shadow:0 2px 8px #001f2f70;pointer-events:auto;cursor:pointer}.tiered-cluster:hover,.tiered-cluster:focus-visible{background:#398e97;outline:2px solid #fff;outline-offset:3px}
 
 .tiered-point-detail{position:absolute;top:108px;right:24px;max-width:300px;padding:14px 18px;border:1px solid #ffffff30;border-radius:12px;background:#19343dee;color:#edf4ec;font:12px/1.6 system-ui;z-index:4;pointer-events:none}@media(max-width:700px){.tiered-point-detail{top:240px;left:16px;right:16px;max-width:none}}
+
+body.step-inside-active header,body.step-inside-active .intro,body.step-inside-active .explore-panel,body.step-inside-active #building-card,body.step-inside-active #data-layers,body.step-inside-active .timeline,body.step-inside-active .map-tools,body.step-inside-active .map-caption,body.step-inside-active .north,body.step-inside-active #selected-address-marker,body.step-inside-active #map-labels,body.step-inside-active #mini-legend{display:none!important}
+/* Left dock so the floor-view horizon stays clear. Mobile stays a bottom bar —
+   a 300px sidebar would eat most of a 390px viewport. */
+#step-inside{position:fixed;z-index:30;top:24px;left:24px;bottom:auto;right:auto;transform:none;width:300px;max-height:calc(100dvh - 48px);overflow:auto;padding:16px 18px;border:1px solid #c8d0c140;border-radius:16px;background:#17313ded;color:#e8eee4;box-shadow:0 12px 40px #00121b50}
+#step-inside[hidden]{display:none}
+.step-heading{display:flex;justify-content:space-between;align-items:start;gap:12px}
+#step-inside h2{font:22px Georgia,serif;margin:5px 0 8px;overflow-wrap:anywhere}
+#step-inside button,#step-inside select,#step-inside input[type=number]{color:inherit;background:#284851;border:1px solid #9bb3ad66;border-radius:7px;padding:8px}
+#step-inside p{font-size:11px;line-height:1.5;margin:7px 0}
+.step-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin:12px 0}
+.step-controls label{display:flex;flex-direction:column;gap:6px;font-size:11px}
+.step-controls input{min-width:0;width:100%;accent-color:#dfc395;box-sizing:border-box}
+.step-readouts{display:grid;grid-template-columns:1fr;gap:10px;padding:12px 0;border-top:1px solid #ffffff20}
+.step-readouts strong{font-size:13px;line-height:1.5;color:#e0c99e}
+.step-note{color:#adc0bf}
+#step-exit{cursor:pointer;white-space:nowrap;flex-shrink:0}
+@media(max-width:700px){
+ #step-inside{top:auto;left:12px;right:12px;bottom:12px;width:auto;max-height:52dvh;padding:14px}
+ .step-controls{gap:8px}
+ .step-controls input[type=number]{width:80px}
+ .step-readouts{grid-template-columns:1fr 1fr;gap:10px}
+ #step-inside h2{font-size:20px}
+ #step-inside .step-note{font-size:10px}
+}
