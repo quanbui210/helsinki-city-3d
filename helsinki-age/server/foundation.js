@@ -1,4 +1,12 @@
 const CONTEXT='https://kartta.hel.fi/3d/datasource-data/28b3e52b-761b-4211-aff8-682c11648c3e/';
+function aerialCoords(req,path){
+  const fromPath=path.match(/^\/api\/foundation\/aerial\/(\d{1,2})\/(\d+)\/(\d+)(?:\.jpg)?$/);
+  if(fromPath)return fromPath.slice(1).map(Number);
+  if(path!=='/api/foundation/aerial')return null;
+  const q=new URL(req.url,'http://localhost').searchParams;
+  const z=Number(q.get('z')),x=Number(q.get('x')),y=Number(q.get('y'));
+  return Number.isInteger(z)&&Number.isInteger(x)&&Number.isInteger(y)?[z,x,y]:null;
+}
 export function foundationMiddleware({apiKey=process.env.NLS_API_KEY,fetchImpl=fetch}={}){
   const cache=new Map(),pending=new Map();let cacheBytes=0;
   return async(req,res,next)=>{
@@ -7,10 +15,10 @@ export function foundationMiddleware({apiKey=process.env.NLS_API_KEY,fetchImpl=f
     if(req.method!=='GET')return send(405,'{}');
     if(path==='/api/foundation/config')return send(200,JSON.stringify({aerial:Boolean(apiKey)}));
     let url,type;
-    const tile=path.match(/^\/api\/foundation\/aerial\/(\d{1,2})\/(\d+)\/(\d+)(?:\.jpg)?$/);
+    const tile=aerialCoords(req,path);
     const context=path.match(/^\/api\/foundation\/context\/(tileset\.json|\d+\/\d+\/\d+(?:\.b3dm)?)$/);
     if(tile){
-      const [z,x,y]=tile.slice(1).map(Number);if(!apiKey)return send(503,'{}');
+      const [z,x,y]=tile;if(!apiKey)return send(503,'{}');
       if(z>18||x>=2**z||y>=2**z)return send(400,'{}');
       // Limit this key-backed service to tiles intersecting metropolitan Helsinki.
       const lon=(x+.5)/2**z*360-180,lat=Math.atan(Math.sinh(Math.PI*(1-2*(y+.5)/2**z)))*180/Math.PI;
@@ -19,7 +27,7 @@ export function foundationMiddleware({apiKey=process.env.NLS_API_KEY,fetchImpl=f
     }else if(context){url=new URL(context[1],CONTEXT);type=context[1].endsWith('.json')?'application/json':'application/octet-stream';}
     else return send(404,'{}');
     try{
-      const key=path.replace(/\.jpg$/,'').replace(/\.b3dm$/,'');
+      const key=tile?`aerial:${tile.join('/')}`:path.replace(/\.b3dm$/,'');
       let bytes=cache.get(key);if(!bytes){let task=pending.get(key);if(!task){task=(async()=>{const response=await fetchImpl(url,{signal:AbortSignal.timeout(20000),redirect:'error'});if(!response.ok)throw Error('Upstream unavailable');const result=Buffer.from(await response.arrayBuffer());if(result.length>16*1024*1024)throw Error('Oversized tile');while(cache.size&&(cache.size>=256||cacheBytes+result.length>64*1024*1024)){const oldest=cache.keys().next().value;cacheBytes-=cache.get(oldest).length;cache.delete(oldest);}cache.set(key,result);cacheBytes+=result.length;return result;})().finally(()=>pending.delete(key));pending.set(key,task);}bytes=await task;}
       send(200,bytes,type);
     }catch{send(502,'{}');} // Never return credential-bearing upstream URLs.

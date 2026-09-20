@@ -1,29 +1,19 @@
-import {foundationMiddleware} from '../../server/foundation.js';
+import {foundationUrl,invokeFoundation} from '../../server/invoke-foundation.js';
 
-const middleware=foundationMiddleware({apiKey:process.env.NLS_API_KEY});
+function pathnameOf(req){
+  const raw=(req.url??'/').split('?')[0];
+  try{if(raw.startsWith('http'))return new URL(raw).pathname;}catch{}
+  return raw;
+}
 
 function pathOf(req){
-  const raw=(req.url??'').split('?')[0];
-  if(raw.startsWith('/api/foundation'))return raw;
+  const pathname=pathnameOf(req);
+  if(pathname.startsWith('/api/foundation'))return foundationUrl(req,pathname);
   const parts=req.query?.path;
   const suffix=Array.isArray(parts)?parts.join('/'):parts??'';
-  return `/api/foundation/${suffix}`;
+  return foundationUrl(req,`/api/foundation/${suffix}`);
 }
 
 export default function handler(req,res){
-  return new Promise(resolve=>{
-    const nodeRes={
-      writeHead(status,headers={}){
-        res.statusCode=status;
-        for(const [key,value] of Object.entries(headers))res.setHeader(key,value);
-      },
-      end(body){
-        if(body!=null)res.end(body);else res.end();
-        resolve();
-      }
-    };
-    middleware({...req,url:pathOf(req),method:req.method},nodeRes,()=>{
-      res.statusCode=404;res.setHeader('Content-Type','application/json');res.end('{}');resolve();
-    });
-  });
+  return invokeFoundation(req,res,pathOf(req));
 }

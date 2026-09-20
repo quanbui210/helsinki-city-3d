@@ -3,7 +3,8 @@
   "outputDirectory": "viewer/dist",
   "framework": null,
   "rewrites": [
-    { "source": "/api/foundation/aerial/:z/:x/:y.jpg", "destination": "/api/foundation/aerial/:z/:x/:y" },
+    { "source": "/api/foundation/aerial/:z/:x/:y", "destination": "/api/foundation/aerial?z=:z&x=:x&y=:y" },
+    { "source": "/api/foundation/aerial/:z/:x/:y.jpg", "destination": "/api/foundation/aerial?z=:z&x=:x&y=:y" },
     { "source": "/api/foundation/context/:a/:b/:c.b3dm", "destination": "/api/foundation/context/:a/:b/:c" }
   ]
 }

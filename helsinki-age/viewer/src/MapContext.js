@@ -11,23 +11,15 @@ export class MapContext {
   this.labels=data.labels.map(label=>({...label,world:C.Cartesian3.fromDegrees(...label.position,3)})).sort((a,b)=>(rank[b.type]+(b.major?2:0))-(rank[a.type]+(a.major?2:0)));
   let previous=0;viewer.scene.postRender.addEventListener(()=>{const now=performance.now();if(now-previous<100)return;previous=now;this.layout();});
  }
- async aerialReady(){
-  const config=await this.config;
-  if(!config.aerial)return false;
-  try{
-    const response=await fetch('/api/foundation/aerial/12/2331/1185',{signal:AbortSignal.timeout(8000)});
-    const type=response.headers.get('content-type')??'';
-    return response.ok&&type.includes('image/');
-  }catch{return false;}
- }
  async preparedMap(theme){
   return C.SingleTileImageryProvider.fromUrl(`/map/${theme}.png`,{rectangle:C.Rectangle.fromDegrees(...this.data.rectangle),credit:'Map data © City of Helsinki · CC BY 4.0'});
  }
  async setTheme(theme){
   this.theme=theme;
   const water=theme==='day'?'#89b6bc':'#102e3c';
-  const aerial=await this.aerialReady();
-  const provider=aerial?new C.UrlTemplateImageryProvider({url:'/api/foundation/aerial/{z}/{x}/{y}',maximumLevel:18,rectangle:C.Rectangle.fromDegrees(24.6,60.09,25.27,60.32),credit:'Orthophotos © National Land Survey of Finland · CC BY 4.0'}):await this.preparedMap(theme);
+  const aerial=Boolean((await this.config).aerial);
+  // Vercel catch-all does not see /aerial/{z}/{x}/{y} (platform 404). Query hits /api/foundation/aerial.
+  const provider=aerial?new C.UrlTemplateImageryProvider({url:'/api/foundation/aerial?z={z}&x={x}&y={y}',maximumLevel:18,rectangle:C.Rectangle.fromDegrees(24.6,60.09,25.27,60.32),credit:'Orthophotos © National Land Survey of Finland · CC BY 4.0'}):await this.preparedMap(theme);
   if(this.theme!==theme)return;
   if(this.layer)this.viewer.imageryLayers.remove(this.layer,true);
   this.layer=this.viewer.imageryLayers.addImageryProvider(provider);this.aerial=aerial;
