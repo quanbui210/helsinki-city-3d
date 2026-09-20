@@ -1,0 +1,48 @@
+{
+  "sources": {
+    "realityMesh": {
+      "url": "https://kartta.hel.fi/3d/mesh/Helsinki_2024/tileset.json",
+      "year": 2024,
+      "license": "City of Helsinki CC BY 4.0",
+      "discovery": "https://kartta.hel.fi/3d/app.config.json"
+    },
+    "meshArchive": {
+      "url": "https://3d.hel.ninja/data/mesh/",
+      "format": "2017 OBJ + MTL + JPEG in ZIP archives; Kalasatama also has a 3D Tiles ZIP",
+      "conversion": "Not needed for the current public 2024 3D Tiles service"
+    },
+    "aerial": {
+      "provider": "National Land Survey of Finland",
+      "layer": "ortokuva",
+      "matrixSet": "WGS84_Pseudo-Mercator",
+      "license": "CC BY 4.0",
+      "key": "Server-side NLS_API_KEY required; never delivered to browser"
+    },
+    "trees": {
+      "url": "/trees.json",
+      "license": "City of Helsinki CC BY 4.0",
+      "height": "Illustrative 9–12 m defaults; register size is trunk diameter, not height"
+    },
+    "materials": {
+      "url": "https://polyhaven.com/a/concrete_wall_006",
+      "license": "CC0",
+      "maps": [
+        "diffuse",
+        "OpenGL normal",
+        "roughness"
+      ]
+    },
+    "distant": {
+      "url": "https://kartta.hel.fi/3d/datasource-data/28b3e52b-761b-4211-aff8-682c11648c3e/tileset.json",
+      "type": "Official LOD1 massing; no data-layer association"
+    }
+  },
+  "integration": "Blend: retain selectable CityGML within its full bounding envelope plus 250 m; photographic context outside. No mesh triangle is guessed to belong to a building. Full-swap sample is visual-only and not shipped.",
+  "limitations": [
+    "Photographic mesh covers Helsinki, not all eastern Espoo data geometry.",
+    "Tree species/positions are official; tree shapes, heights and all procedural windows/material assignments are illustrative.",
+    "N2000 building heights on the existing flat local ground remain approximate at street scale. Step Inside is not implemented or validated.",
+    "Source ages differ; photos are not a live scene."
+  ],
+  "checkedAt": "2026-09-20T11:40:59.602Z"
+}

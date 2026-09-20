@@ -29,8 +29,25 @@ export class MapNavigation {
  pan(dx,dy){this.orbit=false;const h=this.state.heading*Math.PI/180,m=this.metersPerPixel(),y=dy/Math.sin(-this.state.pitch*Math.PI/180),east=(-dx*Math.cos(h)+y*Math.sin(h))*m,north=(dx*Math.sin(h)+y*Math.cos(h))*m;this.state.lon=clamp(this.state.lon+east/(111320*Math.cos(this.state.lat*Math.PI/180)),24.7,25.4);this.state.lat=clamp(this.state.lat+north/111320,60.05,60.45);this.apply();}
  zoom(factor){this.orbit=false;this.cancelFlight();this.state.range=clamp(this.state.range*factor,180,12000);this.apply();}
  apply(){const s=this.state;this.viewer.camera.lookAt(Cartesian3.fromDegrees(s.lon,s.lat,0),new HeadingPitchRange(CesiumMath.toRadians(s.heading),CesiumMath.toRadians(s.pitch),s.range));this.viewer.camera.lookAtTransform(Matrix4.IDENTITY);this.onChange?.(s);}
- cancelFlight(){cancelAnimationFrame(this.flight);this.flight=null;}
+ cancelFlight(){cancelAnimationFrame(this.flight);this.flight=null;const done=this._flightResolve;this._flightResolve=null;done?.(false);}
  flyTo(position,range=1800){this.orbit=false;this.cancelFlight();const start={...this.state},end={...start,lon:position[0],lat:position[1],range},begin=performance.now();const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:950;const tick=t=>{const p=duration?Math.min((t-begin)/duration,1):1,e=p*p*(3-2*p);for(const k of ['lon','lat','range'])this.state[k]=start[k]+(end[k]-start[k])*e;this.apply();if(p<1)this.flight=requestAnimationFrame(tick);else this.flight=null;};this.flight=requestAnimationFrame(tick);}
+ flySteps(steps){
+  this.orbit=false;this.cancelFlight();
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return new Promise(resolve=>{
+   if(!steps.length){resolve(true);return;}
+   let i=0,begin=performance.now();
+   const tick=t=>{
+    const step=steps[i],duration=reduced?0:step.durationMs,p=duration?Math.min((t-begin)/duration,1):1,e=p*p*(3-2*p);
+    step.apply(e);
+    if(p<1)this.flight=requestAnimationFrame(tick);
+    else if(++i<steps.length){begin=performance.now();this.flight=requestAnimationFrame(tick);}
+    else{this.flight=null;this._flightResolve=null;resolve(true);}
+   };
+   this._flightResolve=ok=>resolve(ok);
+   this.flight=requestAnimationFrame(tick);
+  });
+ }
  reset(){this.state.heading=this.home.heading;this.state.pitch=this.home.pitch;this.flyTo([this.home.lon,this.home.lat],this.home.range);}
  rotate(degrees){this.orbit=false;this.cancelFlight();this.state.heading+=degrees;this.apply();}
  togglePerspective(){this.orbit=false;this.state.pitch=this.state.pitch<-75?-48:-88;this.apply();}

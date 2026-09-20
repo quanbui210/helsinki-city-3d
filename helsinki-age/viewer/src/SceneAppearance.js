@@ -1,3 +1,4 @@
+import {createBuildingMaterials} from './BuildingMaterials.js';
 import * as C from 'cesium';
 
 export function setupAppearance(viewer,tileset,center){
@@ -22,11 +23,8 @@ export function setupAppearance(viewer,tileset,center){
   // self-shadow acne on those coplanar surfaces; AO retains courtyard depth.
   tileset.shadows=C.ShadowMode.CAST_ONLY;
   tileset.colorBlendMode=C.Cesium3DTileColorBlendMode.MIX;tileset.colorBlendAmount=.4;
-  tileset.customShader=new C.CustomShader({fragmentShaderText:`
-    void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
-      material.diffuse *= vec3(0.88, 0.81, 0.70);
-      material.roughness = 0.82;
-    }`});
+  tileset.customShader=createBuildingMaterials();
+  viewer.scene.preRender.addEventListener(()=>{tileset.customShader.setUniform('u_dusk',document.body.dataset.theme==='day'?0:1);tileset.customShader.setUniform('u_time',matchMedia('(prefers-reduced-motion: reduce)').matches?0:performance.now()/1000);});
   const ao=viewer.scene.postProcessStages.ambientOcclusion;
   if(C.PostProcessStageLibrary.isAmbientOcclusionSupported(viewer.scene)){
     ao.enabled=true;ao.uniforms.intensity=.7;ao.uniforms.lengthCap=2;ao.uniforms.stepSize=1;ao.uniforms.bias=.1;
@@ -62,6 +60,7 @@ export function setupAppearance(viewer,tileset,center){
       }`,uniforms:{groundOrigin:origin,groundUp:up}}));
   edges.enabled=false;
   return {edges,refresh(contents,active){
+    tileset.customShader.setUniform('u_data',['age','noise','energy','use'].includes(active)?1:0);
     edges.enabled=!['overview','price','parking'].includes(active);
     tileset.colorBlendAmount=['noise','energy','use'].includes(active)?0.74:0.4;
   }};

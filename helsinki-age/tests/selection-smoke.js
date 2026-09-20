@@ -12,6 +12,7 @@ try{
  await page.waitForFunction(()=>!__atlas.nav.flight&&__atlas.buildingSelection.features.size>0);
  await page.locator('.record-listing-summary').click();
  await page.waitForFunction(()=>document.querySelector('.record-listing-summary').dataset.state==='found');
+ await page.locator('#record-tab-context').click();
  assert.equal(await page.locator('#record-panel-context').isVisible(),true);
  assert.match(await page.locator('.record-listing-summary').textContent(),/1 listing found/);
  const visibleHeader=async()=>{
@@ -31,6 +32,6 @@ try{
  await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>!__atlas.layerSwitcher.open);await visibleHeader();
  await page.locator('#building-prompt').scrollIntoViewIfNeeded();await visibleHeader();await page.locator('.record-listing-summary').click();await page.screenshot({path:'artifacts/selection/listings-mobile.png'});
  await page.locator('#close-building').click();assert.equal(await page.locator('#selected-address-marker').isVisible(),false);assert.equal(await page.evaluate(()=>__atlas.buildingSelection.features.size),0);assert.equal(await page.evaluate(()=>__atlas.layerSwitcher.open),true);
- await page.evaluate(()=>__atlas.showBuilding({address:'Example 1',position:[24.95,60.17]}));assert.equal(await page.evaluate(()=>__atlas.buildingSelection.features.size),0);assert.equal(await page.locator('#selected-address-marker').isVisible(),true);assert.equal(await page.locator('#selected-address-marker').textContent(),'');
+ await page.evaluate(()=>__atlas.showBuilding({address:'Example 1',position:[24.95,60.17]}));await page.locator('#selected-address-marker').waitFor({state:'visible'});assert.equal(await page.evaluate(()=>__atlas.buildingSelection.features.size),0);assert.equal(await page.locator('#selected-address-marker').isVisible(),true);assert.equal(await page.locator('#selected-address-marker').textContent(),'');
  assert.deepEqual(errors,[]);console.log('PASS: pinned result summary, accessible tabs, stable header while scrolling, streamed building outline, layer retention, mobile focus and address-point fallback.');
 }finally{await browser.close();}
