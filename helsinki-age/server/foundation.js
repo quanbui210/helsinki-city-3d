@@ -7,8 +7,8 @@ export function foundationMiddleware({apiKey=process.env.NLS_API_KEY,fetchImpl=f
     if(req.method!=='GET')return send(405,'{}');
     if(path==='/api/foundation/config')return send(200,JSON.stringify({aerial:Boolean(apiKey)}));
     let url,type;
-    const tile=path.match(/^\/api\/foundation\/aerial\/(\d{1,2})\/(\d+)\/(\d+)\.jpg$/);
-    const context=path.match(/^\/api\/foundation\/context\/(tileset\.json|\d+\/\d+\/\d+\.b3dm)$/);
+    const tile=path.match(/^\/api\/foundation\/aerial\/(\d{1,2})\/(\d+)\/(\d+)(?:\.jpg)?$/);
+    const context=path.match(/^\/api\/foundation\/context\/(tileset\.json|\d+\/\d+\/\d+(?:\.b3dm)?)$/);
     if(tile){
       const [z,x,y]=tile.slice(1).map(Number);if(!apiKey)return send(503,'{}');
       if(z>18||x>=2**z||y>=2**z)return send(400,'{}');
@@ -19,7 +19,8 @@ export function foundationMiddleware({apiKey=process.env.NLS_API_KEY,fetchImpl=f
     }else if(context){url=new URL(context[1],CONTEXT);type=context[1].endsWith('.json')?'application/json':'application/octet-stream';}
     else return send(404,'{}');
     try{
-      let bytes=cache.get(path);if(!bytes){let task=pending.get(path);if(!task){task=(async()=>{const response=await fetchImpl(url,{signal:AbortSignal.timeout(20000),redirect:'error'});if(!response.ok)throw Error('Upstream unavailable');const result=Buffer.from(await response.arrayBuffer());if(result.length>16*1024*1024)throw Error('Oversized tile');while(cache.size&&(cache.size>=256||cacheBytes+result.length>64*1024*1024)){const oldest=cache.keys().next().value;cacheBytes-=cache.get(oldest).length;cache.delete(oldest);}cache.set(path,result);cacheBytes+=result.length;return result;})().finally(()=>pending.delete(path));pending.set(path,task);}bytes=await task;}
+      const key=path.replace(/\.jpg$/,'').replace(/\.b3dm$/,'');
+      let bytes=cache.get(key);if(!bytes){let task=pending.get(key);if(!task){task=(async()=>{const response=await fetchImpl(url,{signal:AbortSignal.timeout(20000),redirect:'error'});if(!response.ok)throw Error('Upstream unavailable');const result=Buffer.from(await response.arrayBuffer());if(result.length>16*1024*1024)throw Error('Oversized tile');while(cache.size&&(cache.size>=256||cacheBytes+result.length>64*1024*1024)){const oldest=cache.keys().next().value;cacheBytes-=cache.get(oldest).length;cache.delete(oldest);}cache.set(key,result);cacheBytes+=result.length;return result;})().finally(()=>pending.delete(key));pending.set(key,task);}bytes=await task;}
       send(200,bytes,type);
     }catch{send(502,'{}');} // Never return credential-bearing upstream URLs.
   };

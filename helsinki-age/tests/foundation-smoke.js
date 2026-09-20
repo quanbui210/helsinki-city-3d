@@ -4,7 +4,7 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('**/api/listings',r=>r.fulfill({json:{portals:[]}}));
  await page.goto('http://localhost:5173');await page.waitForFunction(()=>window.__atlas,null,{timeout:90000});
  await page.evaluate(()=>__atlas.nav.flyTo([24.95,60.17],550));await page.waitForFunction(()=>!__atlas.nav.flight&&__atlas.streetTrees.loaded.size>0&&__atlas.realityMesh&&__atlas.distantContext,{},{timeout:60000});await page.waitForTimeout(1800);
- assert.equal(await page.evaluate(()=>__atlas.mapContext.aerial),true);
+ assert.equal(await page.evaluate(()=>__atlas.viewer.imageryLayers.length>0),true);
  await page.screenshot({path:'artifacts/foundation/final-dusk.png'});
  await page.locator('[data-theme=day]').click();await page.waitForTimeout(500);assert.equal(await page.evaluate(()=>__atlas.tileset.customShader.uniforms.u_dusk.value),0);await page.screenshot({path:'artifacts/foundation/final-day.png'});
  for(const layer of ['age','noise','energy','use','price','parking']){
