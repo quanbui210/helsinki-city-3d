@@ -10,7 +10,7 @@
     "data:fetch": "node data-pipeline/fetch-wfs-buildings.js",
     "data:join": "node data-pipeline/join-manifest.js",
     "data:convert": "node data-pipeline/convert-citygml-to-3dtiles.js",
-    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build && npm run data:layers && npm run data:energy && npm run data:addresses && npm run data:prices && npm run data:parking && npm run data:trees && npm run data:floors",
+    "data:prepare": "npm run data:fetch && npm run data:join && npm run data:convert && npm run data:map:fetch && npm run data:map:build && npm run data:layers && npm run data:energy && npm run data:addresses && npm run data:prices && npm run data:parking && npm run data:trees && npm run data:floors && npm run data:nearby && npm run data:landmarks",
     "test": "node --test data-pipeline/*.test.js",
     "test:browser": "node tests/smoke.js",
     "data:map:fetch": "node data-pipeline/fetch-map-context.js",
@@ -36,7 +36,12 @@
     "test:weather": "node --test tests/weather-parse.test.js && node tests/weather-smoke.js",
     "data:trees": "node data-pipeline/fetch-trees.js",
     "data:floors": "node data-pipeline/enrich-floors.js",
-    "test:step-inside": "node --test data-pipeline/sightline.test.js && node tests/step-inside-smoke.js"
+    "test:step-inside": "node --test data-pipeline/sightline.test.js && node tests/step-inside-smoke.js",
+    "data:nearby": "python data-pipeline/fetch-transit.py && node data-pipeline/enrich-nearby.js",
+    "data:nearby:offline": "python data-pipeline/fetch-transit.py --offline && node data-pipeline/enrich-nearby.js --offline",
+    "test:nearby": "python data-pipeline/test_transit.py && node --test data-pipeline/nearby.test.js && node tests/nearby-smoke.js",
+    "data:landmarks": "node data-pipeline/enrich-landmark-styles.js",
+    "test:landmarks": "node --test data-pipeline/landmark-styles.test.js && node tests/landmark-styles-smoke.js"
   },
   "dependencies": {
     "@turf/bbox": "^7.4.0",

@@ -1,0 +1,62 @@
+{
+  "styles": {
+    "stadium": 1,
+    "cathedral": 2
+  },
+  "matches": [
+    {
+      "buildingId": "BID_93ba1ccd-9b22-40ac-9ad5-a99fa2cc929a",
+      "landmarkId": "osm:way/138324248",
+      "landmarkName": "Helsinki Olympic Stadium",
+      "landmarkStyle": "stadium",
+      "distanceM": 20.4
+    },
+    {
+      "buildingId": "BID_3e89994f-e471-4531-99d5-b35a8014f1f6",
+      "landmarkId": "osm:way/138368253",
+      "landmarkName": "Bolt Arena",
+      "landmarkStyle": "stadium",
+      "distanceM": 13.3
+    },
+    {
+      "buildingId": "BID_4d58c091-9185-42fd-a8be-78f1f6eb891f",
+      "landmarkId": "osm:way/1542850662",
+      "landmarkName": "Helsinki Cathedral",
+      "landmarkStyle": "cathedral",
+      "distanceM": 0.5
+    },
+    {
+      "buildingId": "BID_437699b6-41d5-4e53-b4fc-08a2509f28e5",
+      "landmarkId": "osm:way/4254163",
+      "landmarkName": "Veikkaus Arena",
+      "landmarkStyle": "stadium",
+      "distanceM": 32.5
+    },
+    {
+      "buildingId": "Building_20325636",
+      "landmarkId": "osm:way/8058282",
+      "landmarkName": "Espoo Metro Areena",
+      "landmarkStyle": "stadium",
+      "distanceM": 18.9
+    },
+    {
+      "buildingId": "BID_347a039b-d228-4836-bd42-f64fe6ccf555",
+      "landmarkId": "osm:way/99404270",
+      "landmarkName": "Helsinki Icehall",
+      "landmarkStyle": "stadium",
+      "distanceM": 8.2
+    }
+  ],
+  "source": {
+    "landmarks": "/nearby.json",
+    "method": "nearest curated landmark to official modeled-building center",
+    "maximumDistanceM": {
+      "stadium": 45,
+      "cathedral": 20
+    }
+  },
+  "notes": [
+    "Styles identify a curated first set of destinations; they do not infer every stadium or church.",
+    "Official CityGML geometry is retained. Materials and illumination are interpretive."
+  ]
+}

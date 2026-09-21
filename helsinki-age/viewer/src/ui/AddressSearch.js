@@ -2,13 +2,15 @@ export const normalizeAddress=value=>value.normalize('NFKD').replace(/[\u0300-\u
 export function searchPlaces(items,query){
  const q=normalizeAddress(query);if(q.length<2)return [];
  return items.filter(item=>item.key.includes(q)||item.aliasKey?.includes(q)).sort((a,b)=>
-   Number(b.key===q)-Number(a.key===q)||Number(b.key.startsWith(q))-Number(a.key.startsWith(q))||Number(Boolean(b.buildingId))-Number(Boolean(a.buildingId))||a.name.localeCompare(b.name,'fi',{numeric:true})
+   Number(b.key===q)-Number(a.key===q)||Number(b.key.startsWith(q))-Number(a.key.startsWith(q))||(b.priority??0)-(a.priority??0)||Number(Boolean(b.buildingId))-Number(Boolean(a.buildingId))||a.name.localeCompare(b.name,'fi',{numeric:true})
  ).slice(0,8);
 }
-export function addressItems(addresses,manifest,context){
+export function addressItems(addresses,manifest,context,landmarks=[]){
  const modeledNames=new Set(manifest.filter(b=>b.address).map(b=>normalizeAddress(b.address)));
  const officialByName=new Map(addresses.map(address=>[normalizeAddress(address.name),address]));
- const items=[...manifest.filter(b=>b.address).map(b=>({name:b.address,alias:officialByName.get(normalizeAddress(b.address))?.alias,buildingId:b.buildingId,position:b.position,detail:`Modeled building · ${b.constructionYear??'year unknown'}`,range:450})),
+ const modeledLandmarks=new Map(manifest.filter(b=>b.landmarkId).map(b=>[b.landmarkId,b]));
+ const items=[...landmarks.map(place=>{const building=modeledLandmarks.get(place.id);return {name:place.name,alias:place.sourceName===place.name?'':place.sourceName,buildingId:building?.buildingId,position:building?.position??place.position,detail:`Featured landmark · ${place.type==='stadium'?'sports venue':'destination'}`,range:place.type==='stadium'?520:420,place:!building,priority:2};}),
+ ...manifest.filter(b=>b.address).map(b=>({name:b.address,alias:officialByName.get(normalizeAddress(b.address))?.alias,buildingId:b.buildingId,position:b.position,detail:`Modeled building · ${b.constructionYear??'year unknown'}`,range:450})),
  ...context.neighborhoods.map(n=>({name:n.name,position:n.position,detail:`Neighborhood · ${n.count} modeled buildings`,range:1900,place:true})),
  ...addresses.filter(a=>!modeledNames.has(normalizeAddress(a.name))).map(a=>({...a,detail:`Official address · ${a.postcode} · no matched 3D record`,range:600}))];
  const names=new Set(items.map(item=>normalizeAddress(item.name)));
@@ -16,11 +18,11 @@ export function addressItems(addresses,manifest,context){
  return items.map(item=>({...item,key:normalizeAddress(item.name),aliasKey:item.alias?normalizeAddress(item.alias):''}));
 }
 export class AddressSearch {
- constructor({input,results,manifest,context,onSelect,onFocus}){
+ constructor({input,results,manifest,context,landmarks,onSelect,onFocus}){
   let items,pending,timer,version=0;
   const hide=()=>{version++;clearTimeout(timer);results.hidden=true;input.setAttribute('aria-expanded','false');};
   const message=text=>{results.replaceChildren();const p=document.createElement('p');p.setAttribute('role','status');p.textContent=text;results.append(p);results.hidden=false;input.setAttribute('aria-expanded','true');};
-  const load=()=>pending??=(async()=>{try{const response=await fetch('/search/addresses.json');if(!response.ok)throw Error('Address index unavailable');items=addressItems(await response.json(),manifest,context);return items;}catch(error){pending=null;throw error;}})();
+  const load=()=>pending??=(async()=>{try{const response=await fetch('/search/addresses.json');if(!response.ok)throw Error('Address index unavailable');items=addressItems(await response.json(),manifest,context,landmarks);return items;}catch(error){pending=null;throw error;}})();
   input.addEventListener('focus',()=>{onFocus();load().catch(()=>{});});
   input.addEventListener('input',()=>{
    clearTimeout(timer);results.replaceChildren();results.hidden=true;input.setAttribute('aria-expanded','false');

@@ -17,3 +17,9 @@ test('Prepared geocoder has official points, provenance and complete count',()=>
  assert.equal(new Set(a.map(v=>v.id)).size,a.length);
  for(const address of a){assert.ok(address.name);assert.equal(address.position.length,2);assert.ok(address.position.every(Number.isFinite));}
 });
+test('Featured landmark names and local-language aliases resolve to their modeled buildings first',()=>{
+ const landmarks=[{id:'osm:stadium',name:'Helsinki Olympic Stadium',sourceName:'Helsingin olympiastadion',type:'stadium',position:[24.9,60.1]}];
+ const manifest=[{buildingId:'stadium',landmarkId:'osm:stadium',address:'Paavo Nurmen tie 1',position:[24.9,60.1]}];
+ const items=addressItems([],manifest,{neighborhoods:[],labels:[]},landmarks);
+ assert.equal(searchPlaces(items,'olympic stadium')[0].buildingId,'stadium');assert.equal(searchPlaces(items,'olympiastadion')[0].name,'Helsinki Olympic Stadium');
+});

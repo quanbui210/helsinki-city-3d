@@ -15,8 +15,8 @@ try{
  await zoom(2800);state=await inspect();assert.ok(state.weights.cluster>0&&state.weights.area>0);
  await zoom(850);state=await inspect();assert.ok(state.weights.cluster>0&&state.weights.point>0);
  await zoom(500);state=await inspect();assert.equal(state.weights.point,1);assert.equal(state.clusters.length,0);assert.equal(state.points,true);await page.screenshot({path:'artifacts/parking-tiers/street.png'});
- await zoom(1700);const target=await page.locator('.tiered-cluster').evaluateAll(items=>items.findIndex(e=>{const r=e.getBoundingClientRect();return r.x>450&&r.x<1000&&r.y>150&&r.y<650;}));assert.ok(target>=0);await page.locator('.tiered-cluster').nth(target).click();await page.waitForFunction(()=>!__atlas.nav.flight);assert.ok(await page.evaluate(()=>__atlas.nav.state.range<1700));
- await page.evaluate(()=>__atlas.switchLayer('overview'));assert.equal(await page.locator('.tiered-clusters').isVisible(),false);
+ await zoom(1700);const target=await page.locator('.tiered-clusters:not(.nearby-map-clusters) .tiered-cluster').evaluateAll(items=>items.findIndex(e=>{const r=e.getBoundingClientRect();return r.x>450&&r.x<1000&&r.y>150&&r.y<650;}));assert.ok(target>=0);await page.locator('.tiered-clusters:not(.nearby-map-clusters) .tiered-cluster').nth(target).click();await page.waitForFunction(()=>!__atlas.nav.flight);assert.ok(await page.evaluate(()=>__atlas.nav.state.range<1700));
+ await page.evaluate(()=>__atlas.switchLayer('overview'));assert.equal(await page.locator('.tiered-clusters:not(.nearby-map-clusters)').isVisible(),false);
  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>__atlas.switchLayer('parking'));await zoom(1700);await page.screenshot({path:'artifacts/parking-tiers/mobile.png'});
  assert.deepEqual(errors,[]);console.log('PASS tier crossfades, aggregate footprint, dynamic counted clusters, click-to-zoom, cleanup and mobile');
 }finally{await browser.close();}

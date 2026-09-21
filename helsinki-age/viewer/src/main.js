@@ -1,3 +1,4 @@
+import {NearbyPlaces} from './NearbyPlaces.js';
 import {StepInside} from './StepInside.js';
 import {loadRealityMesh,loadDistantContext} from './RealityMesh.js';
 import {StreetTrees} from './StreetTrees.js';
@@ -58,7 +59,7 @@ const areaCard=document.createElement('aside');areaCard.id='price-area-card';are
 const listingContext=document.createElement('section');listingContext.id='building-listings';$('#building-status').after(listingContext);
 const buildingPanel=new BuildingPanel($('#building-card'));const listingSearch=new ListingSearch(listingContext,(state,count)=>buildingPanel.status(state,count));buildingPanel.requestSearch=()=>listingSearch.search();
 const cinematic=new CinematicView();
-let weather,stepInside;
+let weather,stepInside,nearbyPlaces;
 const stepButton=document.createElement('button');stepButton.id='step-inside-button';stepButton.type='button';stepButton.className='record-shortlist';stepButton.textContent='Step inside →';stepButton.hidden=true;document.querySelector('.record-tabs').before(stepButton);stepButton.onclick=()=>{if(selectionRecord){buildingPanel.closeDetail();stepInside?.enter(selectionRecord,stepButton);}};
 let buildingSelection,mobileDrawerWasOpen;
 function compactForSelection(){if(selectionRecord&&innerWidth<=700&&mobileDrawerWasOpen===undefined&&layerSwitcher){mobileDrawerWasOpen=layerSwitcher.open;layerSwitcher.open=false;layerSwitcher.syncOpen();}}
@@ -95,7 +96,7 @@ function showBuilding(record,feature){
  // the just-collapsed dock immediately instead of racing the ResizeObserver
  // against an imminent viewport-size change (e.g. a test's mobile resize).
  layerSwitcher?.collapse();fitRecordCard();
- $('#building-card').hidden=false;buildingPanel.open(record);compactForSelection();buildingSelection?.show(record,loadedContents);$('#building-address').textContent=record.address||'An unnamed building';
+ $('#building-card').hidden=false;buildingPanel.open(record);compactForSelection();buildingSelection?.show(record,loadedContents);$('#building-address').textContent=record.landmarkName||record.address||'An unnamed building';
  const category=useCategories.find(c=>c.id===record.useCategory);
  const noiseMode=layerManager.activeId==='noise'?layerManager.state.mode:'combined';
  // age/noise/energy/use share the same layers.json methodology reference
@@ -103,18 +104,19 @@ function showBuilding(record,feature){
  // (with their own source link) via buildingContext(), so no extra one is added there.
  const layerSource=id=>layerManager.layers.get(id)?.source??'/layers.json';
  buildingPanel.setMetric('age',record.constructionYear??'Unknown',`Register ID · RATU: ${record.ratu||'Not matched'}. Geometry detail: ${record.lod?'LOD'+record.lod+' · CityGML':'No modeled geometry'}.`,layerSource('age'));
- buildingPanel.setMetric('use',category?category.label:'Not recorded',category?`${category.label} · register code ${record.useCode}.`:'No registered building use matched at this address.',layerSource('use'));
+ buildingPanel.setMetric('use',record.landmarkName??(category?category.label:'Not recorded'),record.landmarkName?`${record.landmarkName} · curated landmark style ${record.landmarkStyle}. Official register purpose: ${record.purpose||category?.label||'not recorded'}.`:category?`${category.label} · register code ${record.useCode}.`:'No registered building use matched at this address.',layerSource('use'));
  buildingPanel.setMetric('noise',`${bandLabel(selectedBand(record,noiseMode))} · ${modes[noiseMode]}`,'Modeled noise · '+modes[noiseMode]+' · '+bandLabel(selectedBand(record,noiseMode))+' · 2022 Lden'+(noiseMode==='combined'?' (highest available transport band, not total exposure)':' (building-center sample)')+'.',layerSource('noise'));
  buildingPanel.setMetric('energy',record.energy?`Class ${record.energy.class}`:'No certificate',record.energy?`Archived class ${record.energy.class} (2013 scheme) · issued ${record.energy.issued??'unknown'} · expires ${record.energy.expires??'unknown'}.`:'No archived energy certificate matched.',layerSource('energy'));
  buildingPanel.setMetric('price',priceAreas?.summary(record.position)??'—',body=>priceAreas?.buildingContext(body,record.position));
  buildingPanel.setMetric('parking',parkingAreas?.summary(record.position)??'—',body=>parkingAreas?.buildingContext(body,record.position,()=>switchLayer('parking')));
  areaCard.hidden=true;areaPinned=false;locationCard.hidden=true;
- listingSearch.show({address:record.address,city:record.geometrySource==='espoo-wfs'?'Espoo':'Helsinki',postalCode:record.postcode??''});
+ if(record.landmarkStyle)listingSearch.close();else listingSearch.show({address:record.address,city:record.geometrySource==='espoo-wfs'?'Espoo':'Helsinki',postalCode:record.postcode??''});
  requestAnimationFrame(()=>{fitRecordCard();buildingSelection?.revealOnMobile(nav,$('#building-card'));});
  $('#building-status').textContent=record.buildingId?`Geometry: ${record.geometrySource==='espoo-wfs'?'official Espoo CityGML':record.geometrySource==='citydb-wfs'?'official Helsinki city information model':'2019 snapshot'}. Register and modeled noise are context for a viewing, not a current building inspection.`:'Official Helsinki address point. No 3D building record is matched at this address; no age, noise or energy value is inferred.';
+ nearbyPlaces?.fill(buildingPanel.nearby,record);
  const [west,south,east,north]=mapContext.data.rectangle;
  if(record.position&&(record.position[0]<west||record.position[0]>east||record.position[1]<south||record.position[1]>north))$('#building-status').textContent+=' This address is outside the prepared reference map; the blank background does not describe its actual surroundings.';
- stepButton.hidden=!record.buildingId;$('#building-prompt').hidden=!record.buildingId;$('#cinematic-view').hidden=!record.position;cinematic.resetButton();
+ stepButton.hidden=!record.buildingId||Boolean(record.landmarkStyle);$('#building-prompt').hidden=!record.buildingId;$('#cinematic-view').hidden=!record.position;cinematic.resetButton();
 }
 function featureFor(record){for(const content of loadedContents.values())for(let i=0;i<content.featuresLength;i++){const f=content.getFeature(i);if(f.getProperty('buildingId')===record.buildingId)return f;}}
 function selectSearchResult(item){
@@ -145,7 +147,7 @@ function nearestArea(lon,lat){const areas=mapContext?.data.neighborhoods||[];ret
 function navigate(position,range=1800){closeSelection();areaCard.hidden=true;areaPinned=false;locationCard.hidden=true;nav.flyTo(position,range);}
 async function init(){
  const get=async url=>{const r=await fetch(url);if(!r.ok)throw Error(`Could not load ${url} (${r.status})`);return r.json();};
- let context,layerData,priceData,parkingData;[manifest,summary,context,layerData,priceData,parkingData]=await Promise.all([get('/buildings-manifest.json'),get('/dataset.json'),get('/map/context.json'),get('/layers.json'),get('/price-by-area.json'),get('/parking.json')]);
+ let context,layerData,priceData,parkingData,nearbyData;[manifest,summary,context,layerData,priceData,parkingData,nearbyData]=await Promise.all([get('/buildings-manifest.json'),get('/dataset.json'),get('/map/context.json'),get('/layers.json'),get('/price-by-area.json'),get('/parking.json'),get('/nearby.json').catch(()=>null)]);
  viewer=new C.Viewer('scene',{baseLayer:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,animation:false,timeline:false,fullscreenButton:false,selectionIndicator:false,infoBox:false,skyBox:false,skyAtmosphere:false,scene3DOnly:true,requestRenderMode:false,contextOptions:{webgl:{alpha:false,preserveDrawingBuffer:true}}});
  viewer.scene.canvas.addEventListener('pointerdown',collapseHero,{passive:true});viewer.scene.canvas.addEventListener('wheel',collapseHero,{passive:true});
  viewer.scene.backgroundColor=C.Color.fromCssColorString('#102c38');viewer.scene.globe.baseColor=C.Color.fromCssColorString('#102e3c');viewer.scene.globe.showGroundAtmosphere=false;viewer.scene.globe.enableLighting=false;viewer.scene.globe.depthTestAgainstTerrain=false;viewer.scene.fog.enabled=false;
@@ -174,10 +176,10 @@ async function init(){
  for(const n of context.neighborhoods){const button=document.createElement('button');button.className='district-button';const name=document.createElement('span'),count=document.createElement('small');name.textContent=n.name;count.textContent=n.count;button.append(name,count);button.title=`Explore ${n.name}: ${n.count} modeled buildings, partial coverage`;button.onclick=()=>{document.querySelectorAll('.district-button').forEach(b=>b.classList.remove('active'));button.classList.add('active');navigate(n.position,1900);};$('#districts').append(button);}
  layerSwitcher=new LayerSwitcher({container:$('#data-layers'),manager:layerManager,onChange:switchLayer});
  const params=new URLSearchParams(location.search);const mode=params.get('mode');switchLayer(params.get('layer')||'overview',{...(Object.hasOwn(modes,mode)?{mode}:{}),metric:params.get('metric')==='rent'?'rent':'sale'});
- new AddressSearch({input:$('#map-search'),results:$('#search-results'),manifest,context,onSelect:selectSearchResult,onFocus:()=>{nav.orbit=false;}});
+ new AddressSearch({input:$('#map-search'),results:$('#search-results'),manifest,context,landmarks:nearbyData?.landmarks??[],onSelect:selectSearchResult,onFocus:()=>{nav.orbit=false;}});
  $('#map-search').addEventListener('input',collapseHero);
  const showArea=entity=>{priceAreas.describe(areaCard,entity.priceArea,entity.priceMetric);const note=document.createElement('p');note.textContent='Postal-area average, not an individual building value. Mix of homes can affect quarterly changes.';areaCard.append(note);areaCard.hidden=false;};
- const handler=new C.ScreenSpaceEventHandler(viewer.scene.canvas);handler.setInputAction(e=>{if(nav.dragged||stepInside?.active)return;areaPinned=false;const feature=viewer.scene.pick(e.position);if(feature instanceof C.Cesium3DTileFeature){const record=layerManager.records.get(feature.getProperty('buildingId'));if(record)showBuilding(record,feature);else{closeSelection();toast('Surrounding city context · no linked building record');}}else{closeSelection();if(layerManager.activeId==='price'&&feature?.id?.priceArea){showArea(feature.id);areaPinned=true;}else areaCard.hidden=true;}},C.ScreenSpaceEventType.LEFT_CLICK);
+ const handler=new C.ScreenSpaceEventHandler(viewer.scene.canvas);handler.setInputAction(e=>{if(nav.dragged||stepInside?.active)return;areaPinned=false;const feature=viewer.scene.pick(e.position);if(feature?.id?.renderer?.config.contextual)return;if(feature instanceof C.Cesium3DTileFeature){const record=layerManager.records.get(feature.getProperty('buildingId'));if(record)showBuilding(record,feature);else{closeSelection();toast('Surrounding city context · no linked building record');}}else{closeSelection();if(layerManager.activeId==='price'&&feature?.id?.priceArea){showArea(feature.id);areaPinned=true;}else areaCard.hidden=true;}},C.ScreenSpaceEventType.LEFT_CLICK);
  let lastHover=0;handler.setInputAction(e=>{if(layerManager.activeId!=='price'||areaPinned||selectionRecord||nav.pointers.size||performance.now()-lastHover<100)return;lastHover=performance.now();const entity=viewer.scene.pick(e.endPosition)?.id;if(entity?.priceArea)showArea(entity);else areaCard.hidden=true;},C.ScreenSpaceEventType.MOUSE_MOVE);
  viewer.scene.canvas.addEventListener('pointerleave',()=>{if(!areaPinned)areaCard.hidden=true;});
  setupLocation({button:locationButton,card:locationCard,onLocate:position=>navigate(position,1500),onExplore:switchLayer});locationButton.disabled=false;
@@ -186,8 +188,9 @@ async function init(){
  document.querySelectorAll('.theme-switch button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===mapContext.theme)));
  $('#loading').remove();nav.orbit=layerManager.activeId==='overview'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
  weather=new LiveWeather(viewer,$('#weather-hud'));weather.start();
+ if(nearbyData)nearbyPlaces=new NearbyPlaces(viewer,nav,nearbyData,()=>!stepInside?.active&&!cinematic.running,navigate);
  stepInside=new StepInside({viewer,nav,mapContext,layerManager,switchLayer,cinematic,tileset});
- window.__atlas={stepInside,viewer,tileset,manifest,slider,nav,mapContext,loadedContents,layerManager,layerSwitcher,switchLayer,appearance,showBuilding,selectSearchResult,priceAreas,parkingAreas,buildingSelection,buildingPanel,listingSearch,cinematic,weather,streetTrees,realityMesh,distantContext};
+ window.__atlas={nearbyPlaces,stepInside,viewer,tileset,manifest,slider,nav,mapContext,loadedContents,layerManager,layerSwitcher,switchLayer,appearance,showBuilding,selectSearchResult,priceAreas,parkingAreas,buildingSelection,buildingPanel,listingSearch,cinematic,weather,streetTrees,realityMesh,distantContext};
 }
 $('#home').onclick=()=>nav?.reset();$('#zoom-in').onclick=()=>{collapseHero();nav?.zoom(.78);};$('#zoom-out').onclick=()=>{collapseHero();nav?.zoom(1.28);};$('#rotate-left').onclick=()=>nav?.rotate(-25);$('#rotate-right').onclick=()=>nav?.rotate(25);$('#north').onclick=()=>nav&&nav.rotate(-nav.state.heading);$('#perspective').onclick=()=>nav?.togglePerspective();$('#orbit').onclick=()=>{if(nav){nav.orbit=!nav.orbit;nav.apply();}};
 $('#labels-toggle').onclick=()=>{if(mapContext){mapContext.enabled=!mapContext.enabled;$('#labels-toggle').setAttribute('aria-pressed',String(mapContext.enabled));$('#labels-toggle span').textContent=mapContext.enabled?'ON':'OFF';mapContext.layout();}};

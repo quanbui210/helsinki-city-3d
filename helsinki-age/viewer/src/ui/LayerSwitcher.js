@@ -42,11 +42,8 @@ export class LayerSwitcher {
     toggle.title=this.open?'Hide lens details':'Show more details for this layer';
     toggle.setAttribute('aria-label',toggle.title);
     toggle.textContent=this.open?'Hide details':'Details';
-    // style.css gold-fills a chrome-row sibling of the tabs (same height
-    // as an active tab). Collapsed: text link on the mini-legend row.
-    // Expanded: text link in the drawer header, never in the tab strip.
-    const slot=this.open?this.container.querySelector('.lens-drawer-bar'):this.container.querySelector('.lens-dock-action');
-    slot.append(toggle);
+    // Stable chrome position: opening the drawer never moves its control.
+    this.container.querySelector('.lens-chrome').append(toggle);
   }
   render(){
     const {active,state}=this.manager;

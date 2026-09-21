@@ -63,7 +63,8 @@ export class BuildingPanel {
       else if(child.id==='building-prompt'||child.id==='cinematic-view')this.detailActions.append(child);
       else this.panels.context.append(child);
     }
-    this.panels.context.prepend(grid,this.detailTrigger);
+    this.nearby=document.createElement('section');this.nearby.className='record-nearby';this.nearby.textContent='Nearby information unavailable.';
+    this.panels.context.prepend(grid,this.nearby,this.detailTrigger);
     card.replaceChildren(header,this.panels.context,this.panels.listings);this.select('context');this.status('idle');
   }
   // Builds the centered <dialog> holding every metric's full detail plus
@@ -109,7 +110,8 @@ export class BuildingPanel {
     const key=record.buildingId??record.address;
     if(this.key!==key){this.key=key;this.select('context');for(const panel of Object.values(this.panels))panel.scrollTop=0;}
     this.syncShortlist(isShortlisted(this.key));
-    this.detailAddress.textContent=record.address||'This building';
+    const landmark=Boolean(record.landmarkStyle);this.summary.hidden=landmark;this.buttons.listings.hidden=landmark;if(landmark)this.select('context');
+    this.detailAddress.textContent=record.landmarkName?[record.landmarkName,record.address].filter(Boolean).join(' · '):record.address||'This building';
   }
   status(state,count=0){
     this.summary.dataset.state=state;

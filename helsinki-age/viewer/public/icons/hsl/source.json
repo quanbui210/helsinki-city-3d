@@ -1,0 +1,29 @@
+{
+  "author": "HSL",
+  "repository": "https://github.com/HSLdevcom/hsl-map-style",
+  "license": "Design: CC BY 4.0",
+  "licenseUrl": "https://raw.githubusercontent.com/HSLdevcom/hsl-map-style/master/LICENSE.md",
+  "retrievedAt": "2026-09-21T19:05:17.084Z",
+  "sources": {
+    "bus": {
+      "url": "https://raw.githubusercontent.com/HSLdevcom/hsl-map-style/master/map-icons/icon-terminal-bus.svg",
+      "adaptation": "None"
+    },
+    "tram": {
+      "url": "https://raw.githubusercontent.com/HSLdevcom/hsl-map-style/master/map-icons/icon-stop-tram.svg",
+      "adaptation": "Cropped stop pole to square pictogram"
+    },
+    "train": {
+      "url": "https://raw.githubusercontent.com/HSLdevcom/hsl-map-style/master/map-icons/icon-terminal-train.svg",
+      "adaptation": "None"
+    },
+    "metro": {
+      "url": "https://raw.githubusercontent.com/HSLdevcom/hsl-map-style/master/map-icons/icon-terminal-train.svg",
+      "adaptation": "Train pictogram recolored orange for metro; this is an adapted symbol, not the official HSL M mark."
+    },
+    "ferry": {
+      "url": "https://raw.githubusercontent.com/HSLdevcom/hsl-map-style/master/map-icons/icon-terminal-ferry.svg",
+      "adaptation": "None"
+    }
+  }
+}

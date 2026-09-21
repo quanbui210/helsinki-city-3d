@@ -58,17 +58,19 @@ export function buildingTriangles(building) {
 const pad = (buffer, alignment=8, fill=0) => Buffer.concat([buffer, Buffer.alloc((alignment-buffer.length%alignment)%alignment,fill)]);
 export function encodeB3dm(positions,normals,batchIds,records) {
   const pos=Buffer.from(new Float32Array(positions).buffer), norm=Buffer.from(new Float32Array(normals).buffer), ids=Buffer.from(new Float32Array(batchIds).buffer);
-  const binary=Buffer.concat([pos,norm,ids]);
+  const styles=Buffer.from(Uint8Array.from(batchIds,id=>records[id]?.landmarkStyle==='stadium'?1:records[id]?.landmarkStyle==='cathedral'?2:0));
+  const binary=Buffer.concat([pos,norm,ids,styles]);
   const min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
   for(let i=0;i<positions.length;i++){const a=i%3;min[a]=Math.min(min[a],positions[i]);max[a]=Math.max(max[a],positions[i]);}
-  const gltf={asset:{version:'2.0',generator:'Helsinki Age deterministic CityGML converter'},scene:0,scenes:[{nodes:[0]}],nodes:[{mesh:0}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1,_BATCHID:2},material:0}]}],materials:[{doubleSided:true,pbrMetallicRoughness:{baseColorFactor:[1,1,1,1],metallicFactor:0,roughnessFactor:0.85}}],buffers:[{byteLength:binary.length}],bufferViews:[{buffer:0,byteOffset:0,byteLength:pos.length,target:34962},{buffer:0,byteOffset:pos.length,byteLength:norm.length,target:34962},{buffer:0,byteOffset:pos.length+norm.length,byteLength:ids.length,target:34962}],accessors:[{bufferView:0,componentType:5126,count:positions.length/3,type:'VEC3',min,max},{bufferView:1,componentType:5126,count:normals.length/3,type:'VEC3'},{bufferView:2,componentType:5126,count:batchIds.length,type:'SCALAR',min:[0],max:[records.length-1]}]};
+  const styleOffset=pos.length+norm.length+ids.length;
+  const gltf={asset:{version:'2.0',generator:'Helsinki Age deterministic CityGML converter'},scene:0,scenes:[{nodes:[0]}],nodes:[{mesh:0}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1,_BATCHID:2,_STYLEID:3},material:0}]}],materials:[{doubleSided:true,pbrMetallicRoughness:{baseColorFactor:[1,1,1,1],metallicFactor:0,roughnessFactor:0.85}}],buffers:[{byteLength:binary.length}],bufferViews:[{buffer:0,byteOffset:0,byteLength:pos.length,target:34962},{buffer:0,byteOffset:pos.length,byteLength:norm.length,target:34962},{buffer:0,byteOffset:pos.length+norm.length,byteLength:ids.length,target:34962},{buffer:0,byteOffset:styleOffset,byteLength:styles.length,target:34962}],accessors:[{bufferView:0,componentType:5126,count:positions.length/3,type:'VEC3',min,max},{bufferView:1,componentType:5126,count:normals.length/3,type:'VEC3'},{bufferView:2,componentType:5126,count:batchIds.length,type:'SCALAR',min:[0],max:[records.length-1]},{bufferView:3,componentType:5121,count:batchIds.length,type:'SCALAR',min:[0],max:[2]}]};
   const json=pad(Buffer.from(JSON.stringify(gltf)),4,0x20),bin=pad(binary,4);
   const glbHeader=Buffer.alloc(20);glbHeader.write('glTF');glbHeader.writeUInt32LE(2,4);glbHeader.writeUInt32LE(28+json.length+bin.length,8);glbHeader.writeUInt32LE(json.length,12);glbHeader.writeUInt32LE(0x4e4f534a,16);
   const binHeader=Buffer.alloc(8);binHeader.writeUInt32LE(bin.length,0);binHeader.writeUInt32LE(0x004e4942,4);
   const glb=pad(Buffer.concat([glbHeader,json,binHeader,bin]));
   const ftRaw=Buffer.from(JSON.stringify({BATCH_LENGTH:records.length}));
   const ft=Buffer.concat([ftRaw,Buffer.alloc((8-(28+ftRaw.length)%8)%8,0x20)]);
-  const keys=['buildingId','ratu','constructionYear','address','purpose','joinStatus','lod'];
+  const keys=['buildingId','ratu','constructionYear','address','purpose','joinStatus','lod','landmarkStyle','landmarkName','landmarkId'];
   const bt=pad(Buffer.from(JSON.stringify(Object.fromEntries(keys.map(key=>[key,records.map(r=>r[key]??null)])))),8,0x20);
   const header=Buffer.alloc(28);header.write('b3dm');header.writeUInt32LE(1,4);header.writeUInt32LE(28+ft.length+bt.length+glb.length,8);header.writeUInt32LE(ft.length,12);header.writeUInt32LE(bt.length,20);
   return Buffer.concat([header,ft,bt,glb]);
